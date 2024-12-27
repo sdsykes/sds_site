@@ -1,0 +1,16 @@
+Choon is an esoteric programming language. 
+Its special features are: 
++ Output is in the form of music - a wav file in the reference interpreter 
++ There are no variables or alterable storage as such 
++ It is Turing complete 
+
+Yes, Choon's output is music - you can listen to it. And Choon gets away without having any conventional variable storage by being able to access any note that has been played on its output. One feature of musical performance is that once you have played a note then that's it, it's gone, you can't change it. And it's the same in Choon. Every value is a musical note, and every time a value is encountered in a Choon program it is played immediately on the output. 
+
+To use Choon, you will need a Ruby interpreter, and a C compiler.
+Compile the file rfwav.c with the maths libraries (under unix, 'cc -lm rfwav.c -o rfwav' works, but under cygwin I find that 'make rfwav' suffices).
+You can then run a Choon program by doing something like:
+ruby choon.rb program.choon | rfwav >output.wav
+
+The output of choon.rb is readable as text, and you may save it to a file if you like before processing it to a wav file.
+
+The full description of Choon is contained in the file choon.html.

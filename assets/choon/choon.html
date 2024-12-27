@@ -1,0 +1,146 @@
+<?php
+include '../header.php';
+$path_to_base = "..";
+$options=array();
+ss_header("The Choon Programming Language", $options);
+?>
+<br>
+<H1>The Choon Programming Language</H1>
+<P>
+Copyright &copy; Stephen Sykes, 2002.
+<p><b>Choon</b> is an esoteric programming language.
+<p>Its special features are:
+<ul>
+<li>Output is in the form of music - a wav file in the reference interpreter
+<li>There are no variables or alterable storage as such
+<li>It is Turing complete
+</ul>
+<p>Choon's output is music - you can listen to it.  And Choon gets away without having any conventional variable storage by being able to access any note that has been played on its output.
+One feature of musical performance is that once you have played a note then that's it, it's gone, you can't change it.  And it's the same in Choon.  Every value is a musical note, and every time a value is encountered in a Choon program it is played immediately on the output.
+<p>To give you a taste, <a href="choonmul.choon">this</a> is a Choon program that multiplies the number 4 by the number 7:
+<pre>
+xAB+B+A#.B+B.||:x=x.=4+:||=x
+</pre>
+<p>And the output sounds like <a href="choonmul.wav">this (44K)</a>.  The final note played is 28 semitones above the standard tuning value A440 (which Choon considers to be zero).  And with a bit more complexity, <a href="choondiv.choon">this program</a> divides 18 by 3:
+<pre>
+B+xA#.C--nA.zA=n||:=x-n=n.Ab-z=z.m=n=x||:=m~Ab-m=m.:||~:||=z
+</pre>
+<p>Listen <a href="choondiv.wav">here (261K)</a> - the final note is 6 semitones above A440.
+Until you know more about the language you'll have to take my word that this program actually works out the division!
+<h3>Language Description</h3>
+<p>Choon is a language aimed at making some kind of music.  The simplest Choon program is just a string of notes like <a href="simple.choon">this</a>:
+<pre>
+CDEFGABAGFEDC
+</pre>
+<p>And the output sounds like <a href="simple.wav">this (38K)</a>.  All notes are the same length in Choon - in the reference interpreter, each output note is one tenth of a second long.
+You can also use flat and sharp notes, like <a href="flatsharp.choon">this</a>:
+<pre>
+CEbFF#GCCCCEbFF#GCCC
+</pre>
+<p>Listen <a href="flatsharp.wav">here (46K)</a>.  These two short programs demonstrate how to play the notes of one scale - but what if you want to play higher or lower than this?  You'll need the Choon transposition instructions '-' (down), '+' (up) and '.' (cancel).  When Choon encounters a transposition instruction, it looks at the value of the most recently played note and transposes <i>all future notes played</i> by that amount.  The value of a note is an integer indicating its distance from the standard tuning value A440 (440Hz).  Notes above this are positive, and notes below are negative.  The Choon scale goes from 'C' which is the C below A440, and has a value of -9, to 'B' which is the B above A440, and has a value of 2.  <a href="sailor.choon">The following program</a> uses the transpose facility to play a little tune:
+<pre>
+BB-C#C#C#C#G#F#FG#.BBB++BAGAA.C#C#C#C#-FEbDD--CCCC
+</pre>
+<p>Listen <a href="sailor.wav">here (87K)</a>.  The start of this program, 'BB-', plays the note B twice and then transposes future notes by 2 semitones down.  This means that the following C# instructions are transposed down and are heard as B one octave below the first B.  Likewise, all notes are transposed until the transposition cancel instruction '.' is encountered.  So the B instructions after this are heard at the normal pitch.  'B++' has the effect of setting the transpose to +4 - transpositions are cumulative.
+<p>Choon follows some more musical notation too - you can use repeat bars '||:' and ':||'.  These loop over the enclosed Choon code the number of times indicated by the value of the last note played before the '||:' was encountered.  So 'A#||:CDE:||' will loop and play CDE once, whereas 'B||:CDE:||' will play CDE twice.
+<p>Sometimes you might want to put some silence in the output - in music, when you don't play is often as important as when you do.  To insert a silent note you can use the John Cage instruction (inspired by his work 4'33").  The instruction is the '%' character.
+<p>One key element of Choon, and the one thing that enables it to meet the conditions for being a Turing complete programming language, is the ability to play again notes that have already been played in the output.  An interesting feature of Choon is the lack of storage within the language, but the fact that you can refer back to any note that has previously been played compensates for this.  In fact the output stream amounts to storage, even if it is only write once.  You can 'play again' any note that has been played on the output using the '=' instruction.  There are three different forms:
+<ul>
+<li><b>Absolute</b> - To play the 2nd note that was played, you just say '=2'<br>
+<li><b>Relative</b> - To play the 5th most recently played note, use '=-5'<br>
+<li><b>Named</b> - To play the note played after marker 'x', use '=x'<br>
+</ul>
+<p>Of these methods, Named is usually the most useful.  At any point in a program, a lower case letter may be introduced which will allow you to refer to the note played immediately after that point later on.  These references give the language variables, of a sort.  Never forget though, transpositions apply to <i>every</i> note played - so even if you are referring back to a previous note, the resulting output pitch will be adjusted by the current transposition amount.
+<p>The remaining instructions in Choon are the Tuning Fork instruction ('~'), which will break out of repeat bars if the most recently played note equals the tuning tone A440 (value 0), and the Schoenberg instruction ('?'), which curiously plays all the 12 notes of the scale in a random order.
+<h3>Instruction Set</h3>
+Choon only has a few instructions, so you'll pick it up right away. A Choon program simply consists of a string of Choon instructions.  Whitespace and newlines between instructions is allowed (and sometimes required).  Comments are preceeded by '//' and continue until the end of the line.
+<ul>
+<li><b>Note values</b>
+<p>There are 12 notes in the western musical scale, and they are notated like this:
+<br><br>
+<table border=1><tr><th>Choon instruction</th><th>Note name</th><th>Value</th></tr>
+<tr><td>C or B#</td><td>C</td><td>-9</td></tr>
+<tr><td>C# or Db</td><td>C sharp / D flat</td><td>-8</td></tr>
+<tr><td>D</td><td>D</td><td>-7</td></tr>
+<tr><td>D# or Eb</td><td>D sharp / E flat</td><td>-6</td></tr>
+<tr><td>E or Fb</td><td>E / F flat</td><td>-5</td></tr>
+<tr><td>F or E#</td><td>F / E sharp</td><td>-4</td></tr>
+<tr><td>F# or Gb</td><td>F sharp / G flat</td><td>-3</td></tr>
+<tr><td>G</td><td>G</td><td>-2</td></tr>
+<tr><td>G# or Ab</td><td>G sharp / A flat</td><td>-1</td></tr>
+<tr><td>A</td><td>A</td><td>0</td></tr>
+<tr><td>A# or Bb</td><td>A sharp / B flat</td><td>1</td></tr>
+<tr><td>B or Cb</td><td>B</td><td>2</td></tr>
+</table>
+<p>Note that Choon does not currently support double flats or sharps. 
+<br><br><li><b>Transpositions</b>
+<p>There are three transposition instructions, up('-'), down('+') and cancel('.').  A transposition instruction transposes all subsequent notes played by the amount of the last note played.  The cancel instruction ('.') sets the transposition back to zero.
+<p>Transpositions are cumulative, so the Choon code to transpose future notes up by 2 is "b+", and by 4 would be "b++".  Also, the value used is the value of the previous note after transpositions have been applied, so 'b+b+' transposes future notes up by 6, <i>not</i> by 4.
+<br><br><li><b>John Cage</b>
+<p>The John Cage instruction ('%') causes a one note silence in the output stream.  The transposition value of a John Cage is zero - '%-' and '%+' are no-ops (except that a single silence is added to the output).
+<br><br><li><b>Repeat Bars</b>
+<p>The Repeat Bars instructions ('||:' and ':||') enclose a loop.  The loop will execute the number of times indicated by the most recent note played before the '||:' was encountered.  A zero or negative value will mean Choon will immediately jump to start playing from the matching ':||'.  A John Cage means repeat forever - '%||::||' is an infinite loop.
+<br><br><li><b>Tuning Fork</b>
+<p>The Tuning Fork instruction '~' provides a way to break out of loops.  If a tuning fork is encountered in a loop, and the last note played was a note of value 'A', then Choon will immediately jump to start playing from after the next ':||' instruction.  If there is no further ':||' instruction (meaning ~ has been used outside any repeat bars), then the performance will immediately terminate.
+<br><br><li><b>Markers</b>
+<p>Markers provide marvellous programming convenience.  A marker is a lower case letter or word that remembers a point in the output stream.  Referring to a marker (see below) will cause the note played after the Marker occurred to be played again. Note that transpositions will affect this newly played note.
+<p>Where two or more markers occur sequentially, or a marker follows a play-from-marker instruction, they must be seperated by whitespace.
+<br><br><li><b>Play From Output</b>
+<p>The Play From Output instruction ('=') allows you to play again notes that have already been played in the output stream.  You can refer to the notes by number - the 5th note played since the program began would be '=5', by relative number - the 3rd most recent note played would be '=-3' or by marker - the note played after marker x would be '=x'.
+<p>It is a common idiom to re-use a marker and immediately then refer to it, like this: 'x=x'.  This is akin to saying 'x=x+y' in a conventional programming language (where y represents the currently effective transposition value).
+<p>ETA and Perl man Mike Taylor suggested that there should also be a forward reference form of this instruction: '=+5' would play the 5th note to be played in the future.  But sadly we must live in the present, and refer to the past.
+<br><br><li><b>Arnold Schoenberg</b>
+<p>The Arnold Schoenberg instruction ('?') causes each of the 12 notes of the scale to be played once over in a random order.  Any transposition in effect will apply.  The form this instruction takes is inspired by Schoenberg's work in serialism, although randomisation was possibly introduced by Cage.  At any rate, it is a suitably perverse way to generate a random number.
+</ul>
+<h3>Reference Interpreter</h3>
+<p>The reference interpreter is written in Ruby and C.  Ruby can be downloaded <a href="http://www.ruby-lang.org">here</a> for most platforms, although a Windows version is available <a href="http://www.rubycentral.com">here</a>.  The C program should compile without problems on any reasonable platform, it has been tested on Linux, Sun and Windows with Cygwin.
+<p>The Ruby program 'choon.rb' does the work of interpreting the Choon program, and generates on its standard output a file that contains instructions for generating the wav file program output.  The format of this file is quite simple, and it can be viewed to visually see the results of a program if required.
+<p>The final wav file is generated by the C program 'rfwav.c'.  It takes an intermediate file on its standard input, and generates a wav file on its standard output.
+<ul>
+<li><a href="choon.rb">Download Choon interpreter in Ruby</a>
+<li><a href="rfwav.c">Download wav file generator in C</a>
+</ul>
+<h3>Example programs</h3>
+<ul>
+<li><b>Factorials</b>
+<p><a href="fact.choon">This program</a> finds a factorial.  The number to find the factorial of is given at the beginning of the program - in this case Fb-A is 5, so the last note is 120 above A440 (too high to hear, alas).
+<pre>
+Fb-f g xA .=f||:=fA#-f=f.A#-=f.||:x=x.=g+:||g x=x.:|| // <a href="fact.wav">Listen (223K)</a>
+</pre>
+<li><b>Hello, World!</b>
+<p>No language is complete without an implementation of <a href="hello.choon">this</a>. However, this implementation is rather unusual as Choon cannot speak the words as such.  I have used note values for (upper case only) letters, where 'H' is zero.  So the sequence is 0 (H), -3 (E), 4 (L), 4 (L), 7(O), rest, 15 (W), 7 (O), 10 (R), 4 (L), -4 (D).
+So, run this, and listen to the first musical Hello World!
+<pre>
+AGb-A#A#+A+%A#DF-AC# // <a href="hello.wav">Listen (33K)</a>
+</pre>
+<li><b>99 bottles of beer</b>
+<p>I was delighted to find <a href="http://99-bottles-of-beer.net/language-choon-750.html">this</a> on the <a href="http://99-bottles-of-beer.net">99-bottles-of-beer.net</a> site. By Pedro Gimeno.</p>
+<p>Notes from the author:</p>
+<p>Choon's output is not textual but in the form of musical notes. For this reason, the output is just 99 times the tune. It's not possible to use values without playing a note; that's the reason for the spurious notes at the beginning and once each 11 repetitions.</p>
+<pre>
+B+B+B+E
+||:
+F#
+||:
+%%%%%
+FFF%FFF%FFF%CCC%CCC%CCC%FFF%FFF%FFF%FFFFFF%%%%%%
+GGG%GGG%GGG%DDD%DDD%DDD%GGGGGGGGG%%%%%%
+EEEE%%%EEE%EEE%%%%%%EEE%EEE%EEE%EEE%%%%%%
+CCC%%%%%CCC%DDD%%%%%EEE%FFF%FFF%FFF%FFFFFF
+%%%%%
+:||
+:||
+</pre>
+</ul>
+<h3>Future directions</h3>
+<p>The Choon language as it stands is an interesting excercise in generating music notes from programming, and demonstrating that alterable storage is not required as long as you can look at what you already output.  But a musician colleague of mine is very interested in the development of the language as a genuine means of musical expression.  At present, a program that generates genuine music is difficult to write because the instructions to transpose and loop also produce musical output that might colour the final composition.  Also, the lack of control of note length, volume, tonal quality, and the absence of polyphony really cripple the breadth of musical expression available.  So more developments are required here.
+<p>Secondly, there is no input instruction in Choon at the moment.  Any data needs to be encoded in the input program.  However, perhaps an appropriate input mechanism would be for it to accept input in the form of music - a wav file or from any midi device perhaps.
+<p>One of the original design ideas for Choon was for the input program to also be expressed in music.  This is perfectly possible with the current implementation with a simple mapping of pitches to instructions and a limitation in the amount of markers available.  However, a more advanced idea is to allow either the tonal quality or length (or both) of an input tone to dictate the instruction.  Instructions and data values could be passed at the same time by this method, and the results could be interesting.  The eventual goal is to be able to play an improvised input program that actually does something, and produces nice music on the way.
+<p>Finally, it is possible with recent speech generators to make them speak at a particular pitch.  It should be feasible to combine the Choon output with text (either generated by the program, or from elsewhere) to make the first singing esoteric programming language.
+<h3>Acknowledgements</h3>
+<p>Thanks to Mike Taylor for suggestions and comments.
+<BR><BR><HR>
+<FONT size="-2">S.D.Sykes Feb 2002</FONT>
+<?php
+ss_footer();
+?>

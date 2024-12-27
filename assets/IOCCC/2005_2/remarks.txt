@@ -1,0 +1,20 @@
+    Note: The info file should be named as pic.bmp
+    ----
+
+    Remember the days when computer art was pictures made from ascii
+    characters?  Go back in time with this ascii art generator!
+
+    The generator generates ascii pictures from 24 bit bmp files.  It
+    expects to see such a file on the standard input.  Try:
+
+    ./prog <pic.bmp
+
+    The pictures are converted so that each pixel makes an ascii character.
+    So use small pictures if you want the results to fit in your terminal
+    window.
+
+    Of course the source itself is also an ascii art picture!  Notice the
+    lines are 108 chars long, so be sure to view it in a wide window.
+
+    The actual program is well hidden in amoungst the artwork - a run
+    through cpp helps, but there's plenty left...

@@ -1,0 +1,40 @@
+int short long char
+unary ops & * + - ~ !
+prefix ++ --
+postfix ++ --
+binary ops * / % + - << >> < > <= >= == != & ^ | && ||
+ternary op ?:
+assignment = *= /= %= += -= <<= >>= &= |= ^=
+if
+if else
+while
+do while
+for
+continue
+break
+return
+goto
+sizeof
+
+multi dimension arrays - not global space
+pointers
+recursion
+
+library functions (include "libeta.h")
+strcpy
+strncpy
+strchr
+memset
+strcmp
+strlen
+atoi
+isalpha
+isupper
+islower
+tolower
+toupper
+
+built in functions
+printf
+putchar
+getchar

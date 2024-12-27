@@ -1,0 +1,288 @@
+//
+// Pocket C ETA Compiler for the Palm Pilot
+// (c) 2001 S.Sykes
+// 
+//  4 Apr 2001         SDS  Begun
+//  5 Apr 2001   v1.0  SDS  First working version
+//  8 Apr 2001   v1.1  SDS  Fixed some optimisations, improved recognition of null sequences
+
+//
+// Constants
+//
+#define VERSION "1.1"
+#define MAXSTACK 100
+#define MAXSTACKINDEX 99
+#define MAXLINES 256
+#define PROGNAME "ETA2C"
+#define OUTMEMO "// etaout"
+// #define PROFILE
+
+//
+// Meta data
+//
+@cid "SSYk";
+@name "ETA->C";
+@dbname "ETA->C";
+@ver VERSION;
+@licon1 "eta-large-c.bmp";
+@sicon1 "eta-small-c.bmp";
+
+//
+// Globals
+//
+int currentline=0;
+
+//
+// Error handling
+//
+barf(string s) {
+  mmclose();
+  if (currentline) alert(s+" at line "+(currentline-1));
+  else alert(s);
+//  while (true) event(1);
+  exit();
+}
+
+//
+// ETA program storage and read function
+//
+int readlines=1;
+string theprog[MAXLINES];
+int linelens[MAXLINES];
+
+readprogram() {
+  if (!mmfind(PROGNAME)) barf("Program not found - your program must be in a memo titled ETA2C");
+  mmgetl();  // dispose of the title line
+  while(!mmeof()) {
+    linelens[readlines]=strlen(theprog[readlines]=strupr(mmgetl()));
+    if (++readlines==MAXLINES) barf("Program too long, max lines="+MAXLINES);
+  }
+  mmclose();
+}
+
+//
+// Preprocessor
+//
+preprocess(pointer nflags) {
+  string tprog[MAXLINES],ts,cline;
+  int tl,cl,clinepos,a,inanumber=0,numstart,numend;
+  char ch;
+
+  while(currentline<readlines) {  // line level loop
+    puts(".");
+    cline=theprog[currentline];
+    cl=linelens[currentline];
+    clinepos=numstart=numend=0;
+    while(cl--) {  // char level loop
+      ch=cline@[clinepos];
+      clinepos++;
+      if (nflags[ch]) {
+        tprog[currentline]=tprog[currentline]+ch;
+        tl=strlen(tprog[currentline]);
+        if (ch=='N' && !inanumber) {
+          inanumber=1;
+          numstart=tl;
+        }
+        if (ch=='E') {
+          inanumber=0;
+          numend=tl;
+        }
+        if (!inanumber) {
+          if (tl>2 && ((numstart>=tl-2 && numend>tl-2) || (numstart<tl-2 && numend<tl-2))) {
+            ts=strright(tprog[currentline],3);
+            if (ts=="AAT") {  // ignore rest of line
+              tprog[currentline]=strleft(tprog[currentline],tl-3);
+              break;
+            }
+            if (ts=="NES") {  // this is a no-op
+              tprog[currentline]=strleft(tprog[currentline],tl-3);
+              continue;
+		    }
+		  }
+		  if (ch=='T') {
+  		    if (tl>3 && numstart==tl-3 && numend==tl-2) {
+              ts=strright(tprog[currentline],4);
+              if (ts=="NEAT") {  // this is a no-op
+                tprog[currentline]=strleft(tprog[currentline],tl-4);
+                continue;
+              }
+            }
+            if (tl>4 && numend==tl-2) {
+              ts=strright(tprog[currentline],2);
+              if (ts=="AT") {   // any number followed by AT means ignore rest of line
+                tprog[currentline]=strleft(tprog[currentline],numstart-1);
+                break;
+              }
+            }
+            if (numend==tl-1 && numstart>2) {  // testing for NENsomethingET which is a no-op
+              if (substr(tprog[currentline],numstart-2,2)=="NE") {
+                tprog[currentline]=strleft(tprog[currentline],numstart-3);
+                continue;
+              }
+            }
+          }
+        }
+      }
+    }
+//    if (theprog[currentline]!=tprog[currentline]) puts("tx: "+theprog[currentline]+" to:"+tprog[currentline]+"\n");
+    theprog[currentline]=tprog[currentline];
+    linelens[currentline]=strlen(tprog[currentline]);
+    currentline++;
+  }
+}
+
+//
+// main program - read program from memo then interpret it
+//
+
+main() {
+  int clinepos,accum,numberstate=1,cl,s1,s2,a,lastwaspush,lastwaspop,noverline,caserequired;
+  char ch;
+  string cline;
+  pointer nums,nflags;
+  
+  if (!(nflags=malloc(a=276))) barf("Yikes, malloc failed");  // this section is efficient but ugly
+  while (a--) nflags[a]=0;           // may be quicker to unroll this a bit, but it's run once only
+  nflags['E']=nflags['T']=nflags['A']=nflags['O']=nflags['I']=nflags['N']=nflags['S']=nflags['H']=1;
+  nums=nflags+191;                   // ha, cunning re-use of space
+  nums['T']=1;
+  nums['A']=2;
+  nums['O']=3;
+  nums['I']=4;
+  nums['N']=5;
+  nums['S']=6;  
+  clear();
+  puts("ETA compiler for Palm OS v"+VERSION+"\n");
+  readprogram();
+  puts("Preprocessing");
+  preprocess(nflags);
+  
+  currentline=1; noverline=0; caserequired=0;
+  if (mmfind(OUTMEMO)) mmdelete();
+  mmnew();
+  mmputs(OUTMEMO+'\n');  // preamble
+  mmputs("#define oc if (stacktop<0) barf(\"Stack underflow\")\n");
+  mmputs("#define ot if (stacktop<=0) barf(\"Stack underflow\")\n");
+  mmputs("#define po stack[stacktop--]\n");
+  mmputs("#define ppo stack[stacktop]\n");
+  mmputs("#define uc if (stacktop=="+MAXSTACKINDEX+") barf(\"Stack overflow\")\n");
+  mmputs("#define pu stack[++stacktop]=\n");
+  mmputs("#define ppu stack[stacktop]=\n");
+  mmputs("#define TXR \"Transfer out of range\"\n");
+  mmputs("#define TRM \"Program terminated nicely (transfer to zero)\"\n");
+  mmputs("#define DIV \"Divide by zero\"\n");
+  mmputs("int stack["+MAXSTACK+"],stacktop=-1,tx=1,a,b;\n");
+#ifdef PROFILE
+  mmputs("int tik;");
+#endif
+  mmputs("barf(string s) {");
+#ifdef PROFILE
+  mmputs("puts(\"\nTicks taken = \"+(ticks()-tik));");
+#endif
+  mmputs("alert(s);while (1) event(1);}\n");
+  mmputs("halibut(int n) {int i,m,smn;\n");
+  mmputs("if (n>0) {if (n>stacktop) barf(\"Stack underflow - positive halibut\");");
+  mmputs("m=stack[i=stacktop-n];while (i<stacktop) stack[i]=stack[++i];stack[i]=m;");
+  mmputs("} else {if (-n>stacktop) barf(\"Stack underflow - negative halibut\");");
+  mmputs("stack[stacktop+1]=stack[n+stacktop++];}}\n");
+  mmputs("main() {\n");
+#ifdef PROFILE
+  mmputs("tik=ticks();");
+#endif
+  mmputs("clear();while (tx) {\n");
+  mmputs("switch(tx) {\n");
+  puts("\nCompiling");
+  while(currentline<readlines) {  // line level loop
+    puts(".");
+    if (!numberstate) {if (!noverline) noverline=currentline;}
+    else {
+      if (noverline) {currentline=noverline; noverline=0; caserequired=1;}
+      mmputs("case "+currentline+": {\n");  // transfers are done with case statements
+    }
+    cline=theprog[currentline];
+    cl=linelens[currentline++];
+    clinepos=0;
+    lastwaspush=0;
+    lastwaspop=0;
+    while(cl--) {  // char level loop
+      ch=cline@[clinepos++];
+      if (nflags[ch]) if (numberstate) {  // it's just a two state state machine
+        switch(ch) {
+        case 'E': {
+            mmputs("ot;if (!(a=po)) barf(DIV);ppu (b=ppo)/a;pu b%a;");
+            if (caserequired) {mmputs("}\ncase 50"+currentline+": {\n"); lastwaspush=caserequired=0;}
+            else lastwaspush=1;
+            lastwaspop=0;
+            break;
+          }
+        case 'T': {
+            mmputs("ot;a=po;");
+            mmputs("if (po) {if (a<"+readlines+" && a>=0) tx=a;");
+            mmputs("else barf(TXR);\n");
+            mmputs("if (!tx) barf(TRM);");
+            mmputs("break;}\n");
+            lastwaspush=0;
+            lastwaspop=1;
+            break;
+          }
+        case 'A': {
+            if (!lastwaspop) mmputs("uc;");
+            mmputs("pu "+currentline+";\n");
+            lastwaspush=1;
+            lastwaspop=0;
+            break;
+          }
+        case 'O': {
+            if (!lastwaspush) mmputs("oc;");
+            mmputs("puts((char)po);");
+            lastwaspush=0;
+            lastwaspop=1;
+            break;
+          }
+        case 'I': {
+            if (!lastwaspop) mmputs("uc;");
+            mmputs("puts((char)(pu getc()));\n");
+            lastwaspush=1;
+            lastwaspop=0;
+            break;
+          }
+        case 'N': {
+            numberstate=accum=0;
+            break;
+          }
+        case 'S': {
+            mmputs("ot;a=po;ppu (ppo-a);");
+            lastwaspush=1;
+            lastwaspop=1;
+            break;
+          }
+        case 'H': {
+            if (!lastwaspush) mmputs("oc;");
+            mmputs("halibut(po);");
+            lastwaspush=1;
+            lastwaspop=0;
+            break;
+          }
+        }
+      } else { // in numberstate
+        if (ch=='E') {
+          if (!lastwaspop) mmputs("uc;");
+          mmputs("pu "+accum+";\n"); 
+          numberstate=1;
+          if (noverline) {
+            mmputs("tx=50"+currentline+";break;");
+            break;
+          }
+          if (caserequired) {mmputs("}\ncase 50"+currentline+": {\n"); lastwaspush=caserequired=0;}
+          else lastwaspush=1;
+          lastwaspop=0;
+        } else accum=accum*7+nums[ch];
+      }
+    }  // ends char level loop
+    if (numberstate) mmputs("}\n");  // ends case for this line
+  }
+  if (!numberstate) mmputs("}\n");
+  mmputs("tx=0;}}\nbarf(\"Program terminated normally\");}\n");
+  puts("done");
+  barf("Finished");
+}

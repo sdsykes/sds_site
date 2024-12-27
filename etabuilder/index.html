@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- (1) force latest IE rendering engine: bit.ly/1c8EiC9 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>The Ruby ETA Builder</title>
+  <meta name="description" content="Developer, Founder of LibPixel
+" />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@sdsykes" />
+    <meta name="twitter:title" content="The Ruby ETA Builder" />
+    <meta name="twitter:image" content="http://stephensykes.com/assets/images/ss_logo.png" />
+    
+    <meta name="twitter:description" content="Developer, Founder of LibPixel" />
+    
+  
+  
+  <meta property="og:site_name" content="Stephen Sykes" />
+  <meta property="og:title" content="The Ruby ETA Builder"/>
+  
+  <meta property="og:description" content="Developer, Founder of LibPixel" />
+  
+  <meta property="og:image" content="http://stephensykes.com/assets/images/ss_logo.png" />
+  <meta property="og:url" content="http://stephensykes.com/etabuilder/" >
+  <meta property="og:type" content="blog" />
+  
+
+  <link rel="canonical" href="http://stephensykes.com/etabuilder/"/>
+  <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="/css/print.css" />
+</head>
+
+  <body itemscope itemtype="http://schema.org/Article">
+    <!-- header start -->
+
+<a href="http://stephensykes.com" class="logo-readium"><span class="logo" style="background-image: url(/assets/images/ss_logo.png)"></span></a>
+
+<!-- header end -->
+
+    <main class="content" role="main">
+      <article class="post">
+        
+        <div class="noarticleimage">
+          <div class="post-meta">
+            <h1 class="post-title">The Ruby ETA Builder</h1>
+            <div class="cf post-meta-text">
+              <div class="author-image" style="background-image: url()">Blog Logo</div>
+              <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person"></h4>
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        
+        <section class="post-content">
+          <a name="topofpage"></a>
+          <p>Copyright © Stephen Sykes, 2001.</p>
+
+<p>This is a utility package for <a href="http://www.miketaylor.org.uk">Mike Taylor</a>’s <a href="http://www.miketaylor.org.uk/tech/eta/doc">ETA language</a>.</p>
+
+<p>This package is used by a Ruby ETA program, and produces pure ETA code output.</p>
+
+<p>This is written in Ruby - in case you haven’t come across Ruby before, it is an extremely well designed object oriented programming language, which has a number of interesting features.
+To learn more visit the <a href="http://www.ruby-lang.org/en">Ruby home page</a>.</p>
+
+<p>A Ruby ETA program consists of a mixture of the normal operations you would find in any programming language, use of the features of Ruby, and some special functions that are effectively pre defined macros.  If you want to build more than trivial ETA programs, then this is probably the quickest way to do it.  You can build useful programs without actually having to write a single ETA instruction.  And combined with the <a href="/assets/etab.html">ETA Beautifier</a>, you will produce nice, readable, executable nonsense.</p>
+
+<h3 id="classes-and-methods">Classes and methods</h3>
+<p>There are these useful classes to play with:</p>
+
+<ul>
+  <li><code>EtaInt</code> - numbers stored in the stack that you can use for arithmetic and any other purpose</li>
+  <li><code>InputBlock</code> - a way of sucking an amount of input and storing it in the stack</li>
+  <li><code>Table</code> - a list of numbers that can be selected from using an index (effectively a read only array)</li>
+  <li><code>EtaArray</code> - an Array implementation that uses EtaInt - access elements using the [] and []= operators</li>
+</ul>
+
+<p>And there are the following handy methods:</p>
+
+<ul>
+  <li><code>eprint</code> - print a list of things from an eta program - numbers and strings</li>
+  <li><code>input</code> - input a character</li>
+  <li><code>input_number</code> - input a decimal number</li>
+  <li><code>eif</code> - if (condition) { }</li>
+  <li><code>eelse</code> - else { }</li>
+  <li><code>ewhile</code> - while (condition) { }</li>
+  <li><code>eexit</code> - exits from ETA by jumping to zero</li>
+  <li><code>write</code> - write the following ETA to the output, trying to keep track of the stack</li>
+  <li><code>write_raw</code> - write the following ETA to the output, ignoring the stack</li>
+  <li><code>next_line</code> - move to the next ETA output line</li>
+</ul>
+
+<h3 id="usage">Usage</h3>
+<p>Writing a Ruby ETA program is simple - you are writing code that will be read by the Ruby interpreter, so you follow the same language conventions as in regular Ruby.
+A Ruby ETA program will take the following form:</p>
+
+<pre>
+require 'eta.rb'
+
+# program goes here
+
+finish
+</pre>
+
+<p>Some things to note about using etabuilder:</p>
+
+<ul>
+  <li>EtaInts can be mixed freely with integers in arithmetic operations.  </li>
+  <li>The bitwise operations may not work correctly for negative numbers, this will be fixed in a later version.</li>
+  <li>You can use the constants <code>true</code> and <code>false</code> in conditions.</li>
+  <li>The condition logic may not work the way you expect - zero represents true, and all other values represent false.  This stems from the way that the transfer instruction works in ETA.  In general it is safer to always use a comparison or equality operator.</li>
+  <li>An <code>eelse</code> statement must immediately follow an <code>eif</code> block, like this:</li>
+</ul>
+
+<pre>
+eif (x &gt; y) {
+  eprint "x was bigger\n"
+}
+eelse {
+  eprint "x wasn't bigger\n"
+}
+</pre>
+
+<ul>
+  <li>Remember that you cannot use <code>&amp;&amp;</code> or <code>||</code> - this is due to the way that Ruby works.</li>
+  <li>You can use ! to negate the sense of a condition only at the beginning, where it will be detected:</li>
+</ul>
+
+<pre>
+eif (!(x &lt; y)) {    # legal
+}
+eif (x + y != z) {  # legal, x!=y is translated to !(x==y) by the interpreter, &amp; precedence rules apply
+}
+eif ((x==y) != z) { # undefined
+}
+</pre>
+
+<ul>
+  <li>You can define Ruby methods to make life easier:</li>
+</ul>
+
+<pre>
+def pig(z)
+  eif (z &gt; 5) {
+    eprint "Oink!"
+  }
+end
+
+pig(5)
+pig(6)
+pig(anEtaInt)
+</pre>
+
+<p>Note that this will result in three instances the comparison and print code in the output - this is not the most object code size efficient method of doing this.</p>
+
+<ul>
+  <li>It is often useful to use Ruby looping constructs, such as the following:</li>
+</ul>
+
+<pre>
+30.times do |a|
+  eprint a, " bottles were on the wall... put another one there...\n"
+end
+</pre>
+
+<p>Again, this is not efficient because the code will be repeated 30 times in the above case.</p>
+
+<ul>
+  <li>Both InputBlocks and Tables are accessed using the array index operator [].  They are read-only constructs.</li>
+</ul>
+
+<h3 id="example">Example</h3>
+<p>Just to prove the power of the ETA builder, I wrote this <a href="/assets/tictac.rb">noughts and crosses program</a>.</p>
+
+<h3 id="source-code">Source Code</h3>
+<p>You can download the program <a href="/assets/eta-rb.rb">here</a>.</p>
+
+        </section>
+      </article>
+    </main>
+    <div class="bottom-closer">
+      <div class="background-closer-image"  style="background-image: url(/assets/images/cA4aKEIPQrerBnp1yGHv_IMG_9534-3-2.jpg)">
+        Image
+      </div>
+      <div class="inner">
+        <h1 class="blog-title">Stephen Sykes</h1>
+        <h2 class="blog-description">Developer, Founder of LibPixel
+</h2>
+        <a href="/" class="btn">Back to Overview</a>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/assets/js/index.js"></script>
+<script type="text/javascript" src="/assets/js/readingTime.min.js"></script>
+<script>
+(function ($) {
+  "use strict";
+  $(document).ready(function(){
+
+    var $window = $(window),
+    $image = $('.post-image-image, .teaserimage-image');
+    
+      $window.on('scroll', function() {
+        var top = $window.scrollTop();
+
+        if (top < 0 || top > 1500) { return; }
+        $image
+          .css('transform', 'translate3d(0px, '+top/3+'px, 0px)')
+          .css('opacity', 1-Math.max(top/700, 0));
+      });
+      $window.trigger('scroll');
+
+      var height = $('.article-image').height();
+      $('.post-content').css('padding-top', height + 'px');
+
+      $('a[href*=#]:not([href=#])').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
+         && location.hostname == this.hostname) {
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+          if (target.length) {
+            $('html,body').animate({ scrollTop: target.offset().top }, 500);
+            return false;
+          }
+        }
+      });
+
+  });
+}(jQuery));
+</script>
+
+
+  </body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- (1) force latest IE rendering engine: bit.ly/1c8EiC9 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Ruby ETA Interpreter</title>
+  <meta name="description" content="Developer, Founder of LibPixel
+" />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@sdsykes" />
+    <meta name="twitter:title" content="Ruby ETA Interpreter" />
+    <meta name="twitter:image" content="http://stephensykes.com/assets/images/ss_logo.png" />
+    
+    <meta name="twitter:description" content="Developer, Founder of LibPixel" />
+    
+  
+  
+  <meta property="og:site_name" content="Stephen Sykes" />
+  <meta property="og:title" content="Ruby ETA Interpreter"/>
+  
+  <meta property="og:description" content="Developer, Founder of LibPixel" />
+  
+  <meta property="og:image" content="http://stephensykes.com/assets/images/ss_logo.png" />
+  <meta property="og:url" content="http://stephensykes.com/ruby/" >
+  <meta property="og:type" content="blog" />
+  
+
+  <link rel="canonical" href="http://stephensykes.com/ruby/"/>
+  <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="/css/print.css" />
+</head>
+
+  <body itemscope itemtype="http://schema.org/Article">
+    <!-- header start -->
+
+<a href="http://stephensykes.com" class="logo-readium"><span class="logo" style="background-image: url(/assets/images/ss_logo.png)"></span></a>
+
+<!-- header end -->
+
+    <main class="content" role="main">
+      <article class="post">
+        
+        <div class="noarticleimage">
+          <div class="post-meta">
+            <h1 class="post-title">Ruby ETA Interpreter</h1>
+            <div class="cf post-meta-text">
+              <div class="author-image" style="background-image: url()">Blog Logo</div>
+              <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person"></h4>
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        
+        <section class="post-content">
+          <a name="topofpage"></a>
+          <p>Copyright © Stephen Sykes, 2001.</p>
+
+<p>This is the implementation of <a href="http://www.miketaylor.org.uk">Mike Taylor</a>’s <a href="http://www.miketaylor.org.uk/tech/eta/doc">ETA language</a> in Ruby.<br /></p>
+
+<p>In case you haven’t come across Ruby before, it is an extremely well designed object oriented programming language, which has a number of interesting features.
+I have tried to use some of these in this implementation, but to learn more visit the <a href="http://www.ruby-lang.org/en">Ruby home page</a>.</p>
+
+<p>This interpreter comes in at under 100 lines of Ruby, less than 1.8k of code - not quite as small as the <a href="http://www.miketaylor.org.uk/tech/eta/src/smalleta">smalleta</a> perl script, but nearly.
+But I’ve not compressed it in any way, it just came out like that.
+Such is the beauty of Ruby.
+I didn’t even feel the need to put any comments in.
+Such is the beauty of Ruby.</p>
+
+<h3 id="implementation-details">Implementation Details</h3>
+<p>I thought it would be worthwhile giving a short commentary on how the thing works, because it may not be obvious to a non Ruby programmer.
+And I didn’t put any comments in (see above).</p>
+
+<p>The guts of the program centres around the ETA class, which does just about everything.</p>
+
+<p>When you make a new ETA object, it reads in its input program, and sets itself up ready to go.<br />
+Note that we override the stack instance’s pop method in order to detect stack underflows at this point.</p>
+
+<p>The main body of the program steps through the input program using the eachnextline iterator, and the eachchar iterator.</p>
+
+<p>The very inside of this loop calls the correct ETA object method according to the character in the input.
+Notice there is something particularly cunning here… when we begin to interpret a number (the ‘n’ command) we actually override the send method that usually calls the correct command method.
+This new method interprets the number, and restores the parent’s send method when it’s finished.</p>
+
+<p>The error handling comes out particularly nicely.
+The Ruby raise, and begin-rescue-end mechanism is very easy to use, and works a treat.</p>
+
+<p>There’s not much else to say - it really is pretty self documenting…</p>
+
+<h3 id="source-code">Source Code</h3>
+<p>You can download the program <a href="/assets/eta.rb">here</a>.</p>
+<pre>
+#  ETA interpreter  S.D.Sykes
+#  v1.0    9th May 2001
+#  v1.1    22 July 2001 Added exceptions for bad transfers and out of range chars on output
+#  v1.2    30 Oct  2003 Changed % to remainder to match ref interpreter results for negative modulos
+
+class ETA
+  attr :curline
+  def initialize
+    @stack= Array.new
+    @prog= $&lt;.readlines
+    @curline= 1
+    @curnumber= 0
+    def @stack.pop
+      p= super
+      raise if p.nil?
+      p
+    end
+  end
+
+  def eachnextline
+    while @curline &lt; @prog.size.next &amp;&amp; @curline &gt; 0
+      @nextline= @curline.next
+      prevline = @curline
+      yield @curline
+      @curline= @nextline
+    end
+    if (@curline &gt; @prog.size.next || @curline &lt; 0)
+      raise TransferError.new(prevline)
+    end
+  end
+
+  def eachchar(lineno)
+    @prog[lineno-1].each_byte {|c| yield c.chr.downcase if lineno == @curline}
+  end
+  
+  def e
+    a= @stack.pop
+    b= @stack.pop
+    @stack.push b/a
+    @stack.push b.remainder(a)
+  end
+  
+  def a
+    @stack.push(@nextline)
+  end
+
+  def s
+    a= @stack.pop
+    b= @stack.pop
+    @stack.push(b-a)
+  end
+
+  def i
+    a= $stdin.getc
+    a= -1 if a.nil?
+    @stack.push(a)
+  end
+
+  def h
+    a= @stack.pop
+    raise if a.abs.next &gt; @stack.size
+    if a &gt; 0
+      @stack.push(@stack[-a-1])
+      @stack.delete_at(-a-2)
+    else
+      @stack.push(@stack[a-1])
+    end
+  end
+  
+  def o
+    o= @stack.pop
+    if (o &lt; 256 &amp;&amp; o &gt;= 0)
+      print o.chr
+    else
+      raise OutputError
+    end
+  end
+
+  def t
+     a= @stack.pop
+     if @stack.pop.nonzero?
+       @nextline= a
+       @curline= 0
+     end
+  end
+
+  def n
+    def self.send(c)
+      if c == "e"
+        @stack.push(@curnumber)
+        @curnumber= 0
+        class &lt;&lt;self
+          remove_method :send
+        end
+      else
+        @curnumber= @curnumber * 7 + ["h","t","a","o","i","n","s"].index(c)
+      end
+    end
+  end
+end
+
+class OutputError &lt; Exception
+end
+class TransferError &lt; Exception
+  attr_reader :prevline
+  def initialize(pl)
+    @prevline = pl
+  end
+end
+
+begin
+  p=ETA.new
+  p.eachnextline do |lineno|
+    p.eachchar(lineno) {|c| p.send(c) if c=~ /e|t|a|o|n|i|s|h/}
+  end
+rescue OutputError
+  $stderr.print "Output char out of range at line #{p.curline}\n"
+rescue TransferError =&gt; te
+  $stderr.print "Transfer error: non existent line #{p.curline} from line #{te.prevline}\n"
+rescue RuntimeError
+  $stderr.print "Stack underflow at line #{p.curline}\n"
+rescue ZeroDivisionError
+  $stderr.print "Division by zero at line #{p.curline}\n"
+rescue Interrupt
+  $stderr.print "Interrupted at line #{p.curline}\n"
+end
+</pre>
+
+        </section>
+      </article>
+    </main>
+    <div class="bottom-closer">
+      <div class="background-closer-image"  style="background-image: url(/assets/images/cA4aKEIPQrerBnp1yGHv_IMG_9534-3-2.jpg)">
+        Image
+      </div>
+      <div class="inner">
+        <h1 class="blog-title">Stephen Sykes</h1>
+        <h2 class="blog-description">Developer, Founder of LibPixel
+</h2>
+        <a href="/" class="btn">Back to Overview</a>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/assets/js/index.js"></script>
+<script type="text/javascript" src="/assets/js/readingTime.min.js"></script>
+<script>
+(function ($) {
+  "use strict";
+  $(document).ready(function(){
+
+    var $window = $(window),
+    $image = $('.post-image-image, .teaserimage-image');
+    
+      $window.on('scroll', function() {
+        var top = $window.scrollTop();
+
+        if (top < 0 || top > 1500) { return; }
+        $image
+          .css('transform', 'translate3d(0px, '+top/3+'px, 0px)')
+          .css('opacity', 1-Math.max(top/700, 0));
+      });
+      $window.trigger('scroll');
+
+      var height = $('.article-image').height();
+      $('.post-content').css('padding-top', height + 'px');
+
+      $('a[href*=#]:not([href=#])').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
+         && location.hostname == this.hostname) {
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+          if (target.length) {
+            $('html,body').animate({ scrollTop: target.offset().top }, 500);
+            return false;
+          }
+        }
+      });
+
+  });
+}(jQuery));
+</script>
+
+
+  </body>
+</html>

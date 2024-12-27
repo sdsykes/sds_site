@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- (1) force latest IE rendering engine: bit.ly/1c8EiC9 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>ETA in Clojure</title>
+  <meta name="description" content="Developer, Founder of LibPixel
+" />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@sdsykes" />
+    <meta name="twitter:title" content="ETA in Clojure" />
+    <meta name="twitter:image" content="http://stephensykes.com/assets/images/ss_logo.png" />
+    
+    <meta name="twitter:description" content="Developer, Founder of LibPixel" />
+    
+  
+  
+  <meta property="og:site_name" content="Stephen Sykes" />
+  <meta property="og:title" content="ETA in Clojure"/>
+  
+  <meta property="og:description" content="Developer, Founder of LibPixel" />
+  
+  <meta property="og:image" content="http://stephensykes.com/assets/images/ss_logo.png" />
+  <meta property="og:url" content="http://stephensykes.com/etaclojure/" >
+  <meta property="og:type" content="blog" />
+  
+
+  <link rel="canonical" href="http://stephensykes.com/etaclojure/"/>
+  <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="/css/print.css" />
+</head>
+
+  <body itemscope itemtype="http://schema.org/Article">
+    <!-- header start -->
+
+<a href="http://stephensykes.com" class="logo-readium"><span class="logo" style="background-image: url(/assets/images/ss_logo.png)"></span></a>
+
+<!-- header end -->
+
+    <main class="content" role="main">
+      <article class="post">
+        
+        <div class="noarticleimage">
+          <div class="post-meta">
+            <h1 class="post-title">ETA in Clojure</h1>
+            <div class="cf post-meta-text">
+              <div class="author-image" style="background-image: url()">Blog Logo</div>
+              <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person"></h4>
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        
+        <section class="post-content">
+          <a name="topofpage"></a>
+          <p>Copyright © Stephen Sykes, 2011.</p>
+
+<p>I challenged myself to write an <a href="http://www.miketaylor.org.uk/tech/eta/doc/index.html">ETA</a> interpreter in <a href="http://clojure.org/">Clojure</a>.</p>
+
+<p>It turned out to not be as easy as I first thought it might be, and it’s farily lengthy, but I am a pretty inexperienced Clojure programmer at this point.</p>
+
+<p>At least it works, and plays <a href="http://www.stephensykes.com/programs">ETA noughts and crosses</a> very nicely.
+You can find the source <a href="/assets/clojure/core.clj">here</a> and a compiled jar file with everything you need <a href="/assets/clojure/eta-1.0.0-standalone.jar">is here</a>.</p>
+
+<p>You can run the jar like this:</p>
+<pre>
+java -jar eta-1.0.0-standalone.jar program.eta
+</pre>
+
+<p>Here is the program source</p>
+
+<pre>
+; clojure ETA interpreter
+; S Sykes 2011
+;
+; project.clj
+; (defproject eta "1.0.0"
+;  :description "Clojure ETA interpreter"
+;  :dependencies [[org.clojure/clojure "1.2.1"] [org.clojure/clojure-contrib "1.2.0"]]
+;  :main eta.core)
+
+(ns eta.core
+  (:gen-class)
+  (:import (java.io BufferedReader FileReader))
+  (:use [clojure.contrib.io :only (reader)]))
+
+(def rdr (reader *in*))
+
+(defn stack-new [] (vector-of :int))
+(defn stack-push [s e] (conj s (int e)))
+(defn stack-top [s] (get s (dec (count s))))
+(defn stack-pop [s] (if (empty? s) s (pop s)))
+(defn stack-empty? [s] (empty? s))
+(defn halibut [s n] 
+  (if (&lt;= n 0)
+    (conj s (get s (+ (count s) (dec n))))
+    (vec
+      (concat
+          (subvec s 0 (- (count s) (inc n)))
+          (subvec s (- (count s) n))
+          (list (get s (- (count s) (inc n))))))))
+
+(defn state-new [code]
+  (let [code-list (re-seq #".*\r?\n" code)]
+  {:lineno 1
+  :charno 0
+  :stack (stack-new) 
+  :num false
+  :code code-list
+  :linecount (count code-list)
+  :cur-num 0
+  }))
+
+(defn state-stack [s] (:stack s))
+(defn state-lineno [s] (:lineno s))
+(defn state-charno [s] (:charno s))
+(defn state-num [s] (:num s))
+(defn state-input [s] (:input s))
+(defn state-code [s] (:code s))
+(defn state-linecount [s] (:linecount s))
+(defn state-cur-num [s] (:cur-num s))
+
+(defn setval [orig newval] newval)
+(defn state-set-charno [s n] (update-in s [:charno] setval n))
+(defn state-set-lineno [s n] (-&gt; s
+    (update-in [:lineno] setval n)
+    (update-in [:charno] setval -1)))
+    
+(defn state-set-num [s n] (update-in s [:num] setval n))
+(defn state-set-cur-num [s n] (update-in s [:cur-num] setval n))
+(defn state-set-stack [s n] (update-in s [:stack] setval n))
+(defn state-add-to-cur-num [s n] (state-set-cur-num s (+ (* 7 (state-cur-num s)) n)))
+
+(defn inc-lineno [s] (let [state (state-set-lineno s (inc (state-lineno s)))]
+    (if (&gt; (state-lineno state) (count (state-code state)))
+      (state-set-lineno state 0) state)))
+
+(defn inc-charno [s] (let [
+  state (update-in s [:charno] inc)
+  cur-line (nth (state-code state) (dec (state-lineno state)))
+  ]
+  (if (&gt;= (state-charno state) (count cur-line)) 
+    (-&gt; state 
+      (inc-lineno) 
+      (state-set-charno 0)) state)))
+
+
+(defn execute [state chr]
+  (let [top (stack-top (state-stack state)) top2 (stack-top (stack-pop (state-stack state))) stack (state-stack state)]
+    (if (state-num state)
+      (case chr
+        (\h \H) (state-add-to-cur-num state 0)
+        (\t \T) (state-add-to-cur-num state 1)
+        (\a \A) (state-add-to-cur-num state 2)
+        (\o \O) (state-add-to-cur-num state 3)
+        (\i \I) (state-add-to-cur-num state 4)
+        (\n \N) (state-add-to-cur-num state 5)
+        (\s \S) (state-add-to-cur-num state 6)
+        (\e \E) (do 
+          (-&gt; state
+            (state-set-stack (stack-push stack (state-cur-num state)))
+            (state-set-num false)
+            (state-set-cur-num 0)))
+        state)
+      (case chr
+        (\o \O) (do
+                  (when top (print (char top)))
+                  (state-set-stack state (stack-pop stack)))
+        (\a \A) (state-set-stack state (stack-push stack (inc (state-lineno state))))
+        (\n \N) (state-set-num state true)
+        (\i \I) (do 
+                    (flush)
+                    (state-set-stack state (stack-push stack (.read rdr))))
+        (\h \H) (state-set-stack state (halibut (stack-pop stack) top))
+        (\e \E) (state-set-stack state 
+                  (stack-push
+                    (stack-push (stack-pop (stack-pop stack)) (/ top2 top))
+                    (rem top2 top)))
+        (\s \S) (state-set-stack state (stack-push (stack-pop (stack-pop stack)) (- top2 top)))
+        (\t \T) (if (not= 0 top2)
+                  (-&gt; state
+                      (state-set-lineno top)
+                      (state-set-stack (stack-pop (stack-pop stack))))
+                  (state-set-stack state (stack-pop (stack-pop stack))))
+        state))))
+
+(defn process-file [file-name]
+  (loop [state (state-new (slurp file-name))]
+    (let [line (nth (state-code state) (dec (state-lineno state)))
+          new-state (execute state (nth line (state-charno state)))
+          lineno (state-lineno new-state)]
+      (if (and (&gt; lineno 0) (&lt; lineno (state-linecount new-state))) (recur (inc-charno new-state))))))
+
+(defn -main [&amp; args]
+  (do
+    (process-file (first args))
+    (flush)))
+
+</pre>
+
+<p>Clojure was fun - what language next for ETA?</p>
+
+        </section>
+      </article>
+    </main>
+    <div class="bottom-closer">
+      <div class="background-closer-image"  style="background-image: url(/assets/images/cA4aKEIPQrerBnp1yGHv_IMG_9534-3-2.jpg)">
+        Image
+      </div>
+      <div class="inner">
+        <h1 class="blog-title">Stephen Sykes</h1>
+        <h2 class="blog-description">Developer, Founder of LibPixel
+</h2>
+        <a href="/" class="btn">Back to Overview</a>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/assets/js/index.js"></script>
+<script type="text/javascript" src="/assets/js/readingTime.min.js"></script>
+<script>
+(function ($) {
+  "use strict";
+  $(document).ready(function(){
+
+    var $window = $(window),
+    $image = $('.post-image-image, .teaserimage-image');
+    
+      $window.on('scroll', function() {
+        var top = $window.scrollTop();
+
+        if (top < 0 || top > 1500) { return; }
+        $image
+          .css('transform', 'translate3d(0px, '+top/3+'px, 0px)')
+          .css('opacity', 1-Math.max(top/700, 0));
+      });
+      $window.trigger('scroll');
+
+      var height = $('.article-image').height();
+      $('.post-content').css('padding-top', height + 'px');
+
+      $('a[href*=#]:not([href=#])').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
+         && location.hostname == this.hostname) {
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+          if (target.length) {
+            $('html,body').animate({ scrollTop: target.offset().top }, 500);
+            return false;
+          }
+        }
+      });
+
+  });
+}(jQuery));
+</script>
+
+
+  </body>
+</html>

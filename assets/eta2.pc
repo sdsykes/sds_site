@@ -1,0 +1,203 @@
+//
+// Pocket C ETA for the Palm Pilot
+// (c) 2001 S.Sykes
+// 
+// 28 Mar 2001   v1.0  SDS  First working version
+//  1 Apr 2001   v1.1  SDS  Massive optimisations.  This cross compiler has no optimisation in it,
+//                          so doing stuff like x=a[y=z] really is quicker than x=a[z];y=z.
+//  1 Apr 2001   v1.2  SDS  Changed to array based program storage - note maxlines
+//  3 Apr 2001   v1.3  SDS  Fixed halibut bug, moved to dynamic memory for nums and nflags, 
+//                          added div by 0 check & prog length check.  Tidied.
+//  5 Apr 2001   v1.4  SDS  Fixed transfer out of range check.  Minor optimisation of halibut.
+//
+
+//
+// Constants
+//
+#define VERSION "1.4"
+#define MAXSTACK 100
+#define MAXSTACKINDEX 99
+#define MAXLINES 256
+#define PROGNAME "ETA"
+// #define DEBUG
+// #define PROFILE
+
+//
+// Meta data
+//
+@cid "SSyk";
+@name "ETA";
+@dbname "ETA";
+@ver VERSION;
+@licon1 "eta-large.bmp";
+@sicon1 "eta-small.bmp";
+
+//
+// Globals
+//
+int currentline=0;
+#ifdef PROFILE
+int tik;
+#endif
+
+//
+// Error handling
+//
+barf(string s) {
+#ifdef PROFILE
+  puts("\nTicks taken = "+(ticks()-tik));
+#endif
+  if (currentline) alert(s+" at line "+(currentline-1));
+  else alert(s);
+  event(1);
+  exit();
+}
+
+//
+// Stack functions
+// Note I've implemented these as inlines using #defs for performance
+// Also note ppush and ppop - for using a single push and pop on the same line
+//
+
+int stack[MAXSTACK];
+int stacktop=-1;
+
+#define popcheck if (stacktop<0) barf("Stack underflow")
+#define popchecktwo if (stacktop<=0) barf("Stack underflow")
+#define pop stack[stacktop--]
+#define ppop stack[stacktop]
+
+#define pushcheck if (stacktop==MAXSTACKINDEX) barf("Stack overflow")
+#define push stack[++stacktop]=
+#define ppush stack[stacktop]=
+
+halibut(int n) {
+  int i,m,smn;
+  if (n>0) {
+    if (n>stacktop) barf("Stack underflow - positive halibut");
+    m=stack[i=stacktop-n];
+    while (i<stacktop) stack[i]=stack[++i];
+    stack[i]=m;
+  } else {
+    if (-n>stacktop) barf("Stack underflow - negative halibut");
+    stack[stacktop+1]=stack[n+stacktop++];
+  }
+}
+
+//
+// ETA program storage and read function
+//
+int readlines=1;
+string theprog[MAXLINES];
+int linelens[MAXLINES];
+
+readprogram() {
+  if (!mmfind(PROGNAME)) barf("Program not found - your program must be in a memo titled ETA");
+  mmgetl();  // dispose of the title line
+  while(!mmeof()) {
+    linelens[readlines]=strlen(theprog[readlines]=strupr(mmgetl()));
+    if (++readlines==MAXLINES) barf("Program too long, max lines="+MAXLINES);
+  }
+  mmclose();
+}
+
+//
+// main program - read program from memo then interpret it
+//
+
+main() {
+  int clinepos,accum,numberstate=1,cl,s1,s2,a;
+  char ch;
+  string cline;
+  pointer nums,nflags;
+  
+  if (!(nflags=malloc(a=276))) barf("Yikes, malloc failed");  // this section is efficient but ugly
+  while (a--) nflags[a]=0;           // may be quicker to unroll this a bit, but it's run once only
+  nflags['E']=nflags['T']=nflags['A']=nflags['O']=nflags['I']=nflags['N']=nflags['S']=nflags['H']=1;
+  nums=nflags+191;                   // ha, cunning re-use of space
+  nums['T']=1;
+  nums['A']=2;
+  nums['O']=3;
+  nums['I']=4;
+  nums['N']=5;
+  nums['S']=6;
+
+#ifdef PROFILE
+  tik=ticks();
+#endif
+  
+  clear();
+  puts("ETA interpreter for Palm OS v"+VERSION+"\n");
+  readprogram();
+  currentline=1;
+  while(currentline<readlines) {  // line level loop
+    cline=theprog[currentline];
+    cl=linelens[currentline++];
+    clinepos=0;
+    while(cl--) {  // char level loop
+      ch=cline@[clinepos++];
+      if (nflags[ch]) if (numberstate) {  // it's just a two state state machine
+        switch(ch) {
+        case 'E': {
+            popchecktwo;
+            if (!(s1=pop)) barf("Divide by zero");
+            ppush (s2=ppop)/s1;
+            push s2%s1;
+            break;
+          }
+        case 'T': {
+            popchecktwo;
+            a=pop;
+#ifdef DEBUG
+	        alert("T: Addr: "+a+" Cond: "+c);
+#endif
+            if (pop) {
+              if (a<readlines && a>=0) currentline=a;
+              else barf("Transfer out of range");
+              if (!currentline) barf("Program terminated nicely (transfer to zero)");
+              cl=0;
+            }
+            break;
+          }
+        case 'A': {
+            pushcheck;
+            push currentline;
+            break;
+          }
+        case 'O': {
+            popcheck;
+            puts((char)pop);
+            break;
+          }
+        case 'I': {
+            pushcheck;
+            puts((char)(push getc()));
+            break;
+          }
+        case 'N': {
+            numberstate=accum=0;
+            break;
+          }
+        case 'S': {
+            popchecktwo;
+            s1=pop;
+            ppush (ppop-s1);
+            break;
+          }
+        case 'H': {
+            popcheck;
+            halibut(pop);
+            break;
+          }
+        }
+      } else { // in numberstate
+        if (ch=='E') {
+          pushcheck; 
+          push accum; 
+          numberstate=1;
+        } else accum=accum*7+nums[ch];
+      }
+    }  // ends char level loop
+  }
+  barf("Program terminated normally");  // fell off the end of the program
+}

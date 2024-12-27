@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- (1) force latest IE rendering engine: bit.ly/1c8EiC9 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>The Ruby ETA Beautifier</title>
+  <meta name="description" content="Developer, Founder of LibPixel
+" />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@sdsykes" />
+    <meta name="twitter:title" content="The Ruby ETA Beautifier" />
+    <meta name="twitter:image" content="http://stephensykes.com/assets/images/ss_logo.png" />
+    
+    <meta name="twitter:description" content="Developer, Founder of LibPixel" />
+    
+  
+  
+  <meta property="og:site_name" content="Stephen Sykes" />
+  <meta property="og:title" content="The Ruby ETA Beautifier"/>
+  
+  <meta property="og:description" content="Developer, Founder of LibPixel" />
+  
+  <meta property="og:image" content="http://stephensykes.com/assets/images/ss_logo.png" />
+  <meta property="og:url" content="http://stephensykes.com/etab/" >
+  <meta property="og:type" content="blog" />
+  
+
+  <link rel="canonical" href="http://stephensykes.com/etab/"/>
+  <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="/css/print.css" />
+</head>
+
+  <body itemscope itemtype="http://schema.org/Article">
+    <!-- header start -->
+
+<a href="http://stephensykes.com" class="logo-readium"><span class="logo" style="background-image: url(/assets/images/ss_logo.png)"></span></a>
+
+<!-- header end -->
+
+    <main class="content" role="main">
+      <article class="post">
+        
+        <div class="noarticleimage">
+          <div class="post-meta">
+            <h1 class="post-title">The Ruby ETA Beautifier</h1>
+            <div class="cf post-meta-text">
+              <div class="author-image" style="background-image: url()">Blog Logo</div>
+              <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person"></h4>
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        
+        <section class="post-content">
+          <a name="topofpage"></a>
+          <p>Copyright © Stephen Sykes, 2001.</p>
+
+<p>This is a utility program for <a href="http://www.miketaylor.org.uk">Mike Taylor</a>’s <a href="http://www.miketaylor.org.uk/tech/eta/doc">ETA language</a>.</p>
+
+<p>This program takes a plain ETA text (using only the ETA command characters and newlines), and converts it to English-alike sentences.  The sentences are made from words in usr/dict/words, with some added punctuation.  The output usually reads as complete nonsense, but the random nature of the conversion process means that eventually the complete works of Shakespeare will be produced.</p>
+
+<p>This program is written in Ruby - in case you haven’t come across Ruby before, it is an extremely well designed object oriented programming language, which has a number of interesting features.
+To learn more visit the <a href="http://www.ruby-lang.org/en">Ruby home page</a>.</p>
+
+<p>This program simply takes ETA on the standard input, and produces beautified ETA on the standard output.</p>
+
+<h3 id="example">Example</h3>
+<p>The following ETA is a simple implementation of the traditional ‘Hello, World!’ program:
+<code>
+ntoaeonahoeonatoeonatoeonatseonsaeoniieontnoeonatseonaaaeonatoeonahaeonineontoeo
+anet
+</code></p>
+
+<p>The ETA Beautifier transforms it into this:
+<code>
+Burnt rockabye Conakry bulky hole pulmonary, trolley bud, round luxury vault buff. Bordello Nat. Seldom wry, Cygnus cameo fungicide, font. Noel. Don Arcturus. Mckeon, Ababa Creon atop gum, Ceylon jumpy mullah pug paperwork ninefold drug junctor bellboy.<br />
+Gander turk.
+</code></p>
+
+<h3 id="source-code">Source Code</h3>
+<p>You can download the program <a href="/assets/etab.rb">here</a>.</p>
+<pre>
+# eta beautifier
+#
+# S.D.Sykes July 2001
+#
+words = IO.readlines("usrdictwords")
+#words = IO.readlines("dirtywords")  # could use any dictionary you like
+
+$profiles = Hash.new
+
+words.each do |w|
+  w.chomp!
+  w.gsub!(/\r/,"")
+  # exclude some words I don't want to see in the output here
+  if (w =~ /[a-z]/ &amp;&amp; w !~ /(cf)|(Pl)|(Ft)|(Rd)|(du)|(Wu)|(Mt)|(Cluj)|(ppm)|(Mbabane)|(St)|(Nguyen)/)
+    index = w.downcase.gsub(/[bcdfgjklmpqruvwxyz]/,"")
+    if (w.length &gt; 1 || index.length &gt; 0)
+      if ($profiles[index])
+        $profiles[index] = $profiles[index] + "|" + w
+      else
+        $profiles[index] = w
+      end
+    end
+  end
+end
+
+def getword(p)
+  if ($profiles[p])
+    ar = $profiles[p].split("|")
+    ar[rand(ar.length)]
+  else
+    nil
+  end
+end
+
+outstr = String.new("")
+ucflag = 0
+while gets
+  i = 0
+  $_.chomp!
+  while (i &lt; $_.length)
+    testar = [2,6,5,4,3,1,0]
+    testar = [2,5,4,3,6,1,0] if rand(3)==1
+    testar = [1,3,2,6,5,4,0] if rand(3)==1
+    testar.each do |a|
+      if (getword($_[i..i+a]) || a==0)
+        if (ucflag == 0)
+          outstr &lt;&lt; (getword($_[i..i+a])?getword($_[i..i+a]):$_[i]) &lt;&lt; " "
+        else
+          if (getword($_[i..i+a]))
+            outstr &lt;&lt; getword($_[i..i+a]).capitalize &lt;&lt; " "
+          else
+            outstr &lt;&lt; $_[i].chr.capitalize &lt;&lt; " "
+          end
+          ucflag = 0
+        end
+        outstr.capitalize! if i == 0
+        i = i + a + 1
+        break
+      end
+    end
+    if (rand(5)==1)
+      outstr &lt;&lt; getword("") &lt;&lt; " "
+    end
+    if (outstr !~ /[,.:] *$/)
+      if (rand(5)==1)
+        outstr.gsub!(/ +$/, ", ")
+      elsif (rand(9)==1)
+        outstr.gsub!(/ +$/, ". ")
+        ucflag = 1
+      elsif (rand(35)==1)
+        outstr.gsub!(/ +$/, ": ")
+      end
+    end
+  end
+  if (outstr == "")
+    outstr = getword("").capitalize
+    outstr = outstr &lt;&lt; " " &lt;&lt; getword("") if rand(2)==1
+  end
+  outstr = outstr.gsub(/^\s*/,"").gsub(/\s*$/,"")   # top and tail spaces
+  outstr = outstr.gsub(/\ss\s/,"s ").gsub(/\ss$/,"s") # move single 's's to end of prev word
+  outstr = outstr.gsub(/\s\s+/," ") # remove multiple spaces
+  outstr = outstr.gsub(/[,.:]$/, "") # remove trailing punctuation
+  print outstr, ".\n"
+  outstr = ""
+end
+</pre>
+
+        </section>
+      </article>
+    </main>
+    <div class="bottom-closer">
+      <div class="background-closer-image"  style="background-image: url(/assets/images/cA4aKEIPQrerBnp1yGHv_IMG_9534-3-2.jpg)">
+        Image
+      </div>
+      <div class="inner">
+        <h1 class="blog-title">Stephen Sykes</h1>
+        <h2 class="blog-description">Developer, Founder of LibPixel
+</h2>
+        <a href="/" class="btn">Back to Overview</a>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/assets/js/index.js"></script>
+<script type="text/javascript" src="/assets/js/readingTime.min.js"></script>
+<script>
+(function ($) {
+  "use strict";
+  $(document).ready(function(){
+
+    var $window = $(window),
+    $image = $('.post-image-image, .teaserimage-image');
+    
+      $window.on('scroll', function() {
+        var top = $window.scrollTop();
+
+        if (top < 0 || top > 1500) { return; }
+        $image
+          .css('transform', 'translate3d(0px, '+top/3+'px, 0px)')
+          .css('opacity', 1-Math.max(top/700, 0));
+      });
+      $window.trigger('scroll');
+
+      var height = $('.article-image').height();
+      $('.post-content').css('padding-top', height + 'px');
+
+      $('a[href*=#]:not([href=#])').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
+         && location.hostname == this.hostname) {
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+          if (target.length) {
+            $('html,body').animate({ scrollTop: target.offset().top }, 500);
+            return false;
+          }
+        }
+      });
+
+  });
+}(jQuery));
+</script>
+
+
+  </body>
+</html>

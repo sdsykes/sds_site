@@ -1,0 +1,180 @@
+    In case you hadn't guessed by looking at it, this program plays
+    chess.  And it plays it with an amusing degree of incompetence.
+
+    We can find only one previous (regular) chess playing winner of the
+    IOCCC competition, and we felt that it was an area long due for more
+    attention.  Also, the previous entry from the 9th IOCCC, although a
+    superb piece of work,  made use of sed in the makefile to circumvent
+    the size restrictions, a technique that would perhaps be frowned 
+    upon today.
+    So we offer this program, which we have named "Deep Doo-doo".
+
+    In the game, you are white and the computer is black.  The
+    chessboard is shown with white at the bottom and in lower case, like
+    this:
+
+      +-+-+-+-+-+-+-+-+
+    8 |R|N|B|Q|K|B|N|R|
+    7 |P|P|P|P|P|P|P|P|
+    6 |.|.|.|.|.|.|.|.|
+    5 |.|.|.|.|.|.|.|.|
+    4 |.|.|.|.|.|.|.|.|
+    3 |.|.|.|.|.|.|.|.|
+    2 |p|p|p|p|p|p|p|p|
+    1 |r|n|b|q|k|b|n|r|
+      +-+-+-+-+-+-+-+-+
+       A B C D E F G H
+
+    You move first, and play proceeds in the usual way.  Moves are
+    entered in simple coordinates, from and to - like:
+
+    d2d4
+
+    After your move, the computer will make its move and will show the
+    resulting board.  If you win, the program will print the happy face
+    of success for you :->, and will exit.  If you lose, you get the
+    unhappy face of shame :-<.  Some people have pointed out that these
+    faces should in fact be the other way round (happy if the computer
+    wins, sad if it loses).  But we can't actually remember how to
+    change it now, so it's the way it is.
+
+    Features, or limitations (but definately not bugs) of the algorithm:
+
+    * No castling and en-passant moves
+    * Your moves are not verified for correctness (i.e. you may cheat.)
+    * No checkmate or stalemate processing, game continues until
+      someone's king is taken
+    * Black will sometimes move its king into check (this is illegal in
+      chess)
+    * If it is already in check it doesn't always move itself out of
+      check (also illegal)
+    * The final move in the case where black wins (by taking your king)
+      is not shown
+    * Deep Doo-doo's move choices can seem rather peculiar
+
+    Here are some simple game examples to get you going.
+
+    The quickest win we have come up with is 4 moves:
+    e2e3 f7f6
+    h2h4 d7d5
+    d1h5 c7c5
+    h5e8
+
+    white wins
+
+    The fastest suicide for white is also 4 moves:
+
+    f2f4 h7h5
+    e1f2 e7e6
+    f2g3 g7g6
+    g3g4 (h5xg4)
+
+    black wins
+
+    Of course g3g4 (or g3h4 for that matter, but the program does not
+    notice the winning move in that case) is an illegal move in normal
+    chess - you can't move your king into check. This sequence avoids
+    that:
+
+    e2e4 h7h5
+    e1e2 c7c5
+    e2d3 c5c4
+    a2a3 (c4xd3)
+
+    black wins
+
+    However, a2a3 is also not strictly legal here - you must move your
+    king out of check if you can (our fast win relies on black not doing
+    this, of course).
+
+    The shortest suicide mate we have found, without either white or
+    black making an illegal move, is this 13 move job:
+
+    d2d3 f7f6
+    e1d2 b8a6 # moving the king up
+    d2c3 c7c5
+    c3c4 f6f5
+    c4b5 d7d6
+    a2a4 c5c4 # surround the king as much as possible
+    d3d4 g7g5
+    c2c3 h7h5
+    b1a3 e7e5
+    d4d5 g5g4
+    c1e3 g4g3
+    e3b6 g3xh2 # try to lure the queen over
+    a1a2 d8xb6 # the queen takes the bait black mates
+
+
+    The workings of this program are so obfuscated that I can honestly
+    say that, seeing as the program was jointly authored, no one person
+    fully understands how the whole thing operates.
+
+    * The preprocessor is used in an interesting way.
+    * Simple changes in the formatting, such as adding an empty line at
+      the top of the program will break it.
+    * The program workings are not evident in any way in the C code.
+    * The C code is not particularly evident either.
+    * Even indent does not like this program - it causes it to crash.  I
+      take this as a very good sign.
+
+    Some things you can do:
+
+    1.  Look at the source code.
+
+    This won't reveal too much to either the casual observer, or even
+    the detailed inspector.  You are going to need to dig in further to
+    get some insight.
+
+    2.  C pre-process the source.
+
+    This is certainly a bit helpful.  But it is still not possible to
+    really learn anything much about the chess program.  However, you
+    might learn why changing the formatting of the program may cause it
+    to break.
+
+    3.  Run it through a C beautifier.
+
+    Well, you could try running the program through cpp and then, for
+    instance, GNU indent.  But it won't help you.  At all.  Because
+    indent just segfaults in disgust.
+
+    We leave it as an interesting excercise to work out *why* indent
+    crashes.  Perhaps one benefit to the World of the IOCCC is the
+    discovery of tricky little bugs like this.
+
+    4.  Examine the algorithm.
+
+    The algorithm you can see is pretty much just an interpreter.  The
+    chess program, which is buried in the random looking text, is
+    interpreted at runtime.  But before we get to that point, we need to
+    uncompress and convert the program code.  Then we run in a loop
+    until we meet the end of the chess program, which is when either
+    side wins.
+
+    The interpreter is pretty limited in its function, but perhaps the
+    most remarkable thing is that it in fact runs a modified version of
+    the two dimensional programming language "Befunge".  As this is an
+    esoteric language to start with, the result is surely more
+    obfuscation.  It was a struggle to get the whole program and its
+    interpreter under the size limit, together with some attractive
+    formatting.  But the result, we feel, is rather pleasing.
+
+
+    Compiling the program
+
+    The program should compile without problem on any normal ansi
+    capable compiler.  We have tested it with GNU C on Cygwin, BSD and
+    Linux, and with LCC & Digital Mars C on Windows.  The only warning
+    from GCC with -pedantic turned on is "warning: string length `1694'
+    is greater than the length `509' ISO C89 compilers are required to
+    support".  However, I am not aware of any compilers that do not
+    exceed the minimum length sufficiently to support this program.
+
+    If you are brave enough to run gcc with the -Wall option, it will
+    warn you about some things that no decent and clean living C
+    compiler should be concerned about.
+
+
+    Have fun
+
+    Stephen Sykes & "Mtv Europe"

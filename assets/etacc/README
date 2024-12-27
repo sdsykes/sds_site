@@ -1,0 +1,132 @@
+ETACC is a working C compiler for Mike Taylor's ETA language. Yes, that's right, this C compiler generates ETA code. ETA is an esoteric language that consists of only 7 instructions. It has some bizarre features, such as the fact that all numbers are written in a program in base 7. Obviously there are a few constraints on what you can do in an ETA program, but I was able to support quite a large subset of C, detailed below. 
+
+The C compiler should run on any reasonable UNIX system. You need a system C compiler, ruby, and a great deal of patience whilst your programs compile. 
+
+
+Features
+
+
+The supported features of C are as follows: 
+
+int short long char 
+unary ops & * + - ~ ! 
+prefix ++ -- 
+postfix ++ -- 
+binary ops * / % + - << >> < > <= >= == != & ^ | && || 
+ternary op ?: 
+assignment = *= /= %= += -= <<= >>= &= |= ^= 
+arrays subscripts 
+if 
+if else 
+while 
+do while 
+for 
+continue 
+break 
+return 
+goto 
+sizeof 
+Pointers, arrays, strings, character constants and so on are fully supported, and even recursion works. However, I haven't yet been able to support some features. 
+
+The non-supported features are: 
+
+struct union 
+static 
+enum 
+float double unsigned 
+typedef 
+va_args 
+switch case 
+linking of multiple files together 
+multiple dimension arrays in global space 
+function pointers 
+array initialisers 
+I aim to be able to support switch case, multi-d arrays in global space, function pointers and array initialisers in the near future. The remaining features will not be supported in this compiler because of the enormous technical challenges they present. 
+
+
+Libraries
+
+
+The compiler is not much good without some libraries to help you do stuff. 
+
+There are three built-in fuctions that are always present in every program: 
+
+printf 
+putchar 
+getchar 
+Missing from this list at the moment are malloc & free, which will go here once I write them. 
+
+There are currently 12 library functions which you can access if you #include "libeta.h" in your program. 
+
+strcpy 
+strncpy 
+strchr 
+memset 
+strcmp 
+strlen 
+atoi 
+isalpha 
+isupper 
+islower 
+tolower 
+toupper 
+There will be more library functions as soon as I write them. 
+
+Including libeta.h in your program significantly increases the compilation time, so it is not recommended unless you really need one of the functions listed. 
+
+
+Differences from a standard C compiler
+
+
+The main differences you will come across are the lack of features already mentioned above. However, there are also some things you need to know about how this compiler works. 
+
+The code generated works on an ETA machine. ETA is a language that only has a single stack on which to store stuff. No registers, memory or anything. This means that either you need an enormously complex framework to keep track of the size of the stack at all times, or you build fixed size structures into the stack at compile time that hold the variable data that is generated at runtime. I went for the latter approach. This means that the stack size, and hence the amount of memory available to the program, is fixed during compilation. 
+
+The ETA code will be smaller and will compile and run faster if there is less space placed on the stack. So I have gone for quite low values for testing. However, you can specify more stack space if you require it in the parser command. The default value in the compiler shell script is 30. 
+
+If you run out of stack space, either your program will not work correctly, or it will exit after printing "!!". Try changing the stack size value higher. 
+
+Another difference from a standard machine is that all data types are the same size (actually a signed 32 bit int). Because everything, including chars in strings, are this size I decided to make sizeof return the value 1 for a variable of any data type. This perhaps is not quite ANSI, but it seems logical to me. 
+
+
+Installation Package
+
+
+The compiler consists of the following files: 
+c.lex - the flex lexer 
+c.y - the bison parser 
+main.c - the compiler main function 
+eta-rb.rb - the ruby code generation libraries 
+optimise.rb - the ruby optimiser 
+eta-cc-libs.rb - the built in function libraries 
+libeta.h - the C libraries 
+c.sh - the compiler shell script 
+sseta.c - the optimising ETA interpreter 
+Makefile - the makefile 
+The package includes the files c.tab.c and lex.yy.c, which should enable you to compile the parser even if you don't have bison and flex. 
+
+There is also a suite of test programs, which demonstrate various features and do various things. The test programs will compile with a standard C compiler if you make the include path point to the directory libeta.h is in. This is useful for checking results. 
+
+Finally, I included various ETA interpreters that you can run your programs with. However, unless your machine is a TeraOp-per-second supercomputer, I recommend using the optimising interpreter sseta. It is included in the package. 
+
+You can download the whole thing in a tar file from here. 
+
+
+Installation
+
+
+Untar the package, and type "make" in your etacc directory. Everything will hopefully compile fine, please let me know any problems. 
+
+Then edit c.sh - you need to change the ETAPATH variable to point to the directory etacc resides in.
+
+After this, you will want to run the tests. Change to the Tests directory, and type "make". Even better, type "make -j" if you have more than one processor, or one of them fancy hyperthreading processors. 
+
+Then go and make a cup of tea. 
+
+When you get back, everything should have compiled. If not, make some marmite on toast. 
+
+Finally you should be able to type "make test". 
+
+The tests are interactive, but they tell you what to do. 
+
+Some of the tests rely on a visual comparison of the results produced with the expected results (in brackets). 

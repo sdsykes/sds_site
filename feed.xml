@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Stephen Sykes</title>
+    <description>Developer, Founder of LibPixel
+</description>
+    <link>http://sds.switchstep.com/</link>
+    <atom:link href="http://sds.switchstep.com/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Wed, 26 Oct 2016 23:48:57 +0300</pubDate>
+    <lastBuildDate>Wed, 26 Oct 2016 23:48:57 +0300</lastBuildDate>
+    <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>Stuff from old stephensykes site</title>
+        <description>&lt;p&gt;The old website died with the removal of PHP from this server. Good riddance, but my website that was around for 15 years or so suddenly isn’t.&lt;/p&gt;
+
+&lt;p&gt;I saved all of the interesting stuff:&lt;/p&gt;
+
+&lt;h3 id=&quot;ioccc&quot;&gt;IOCCC&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;/ioccc2004&quot;&gt;Winning entry in the 2004 IOCCC&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/ioccc2005&quot;&gt;Winning entry in the 2005 IOCCC&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/ioccc2006&quot;&gt;Winning entry in the 2006 IOCCC&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;widget&quot;&gt;Widget&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;/viiviwagner&quot;&gt;Viivi &amp;amp; Wagner dashboard widget&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;esoteric-programming-languages&quot;&gt;Esoteric programming languages&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;/etacc&quot;&gt;The ETA C compiler project&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/etapalm&quot;&gt;ETA for the Palm Pilot&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/ruby&quot;&gt;Ruby ETA interpreter&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/etaclojure&quot;&gt;Clojure ETA interpreter&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/etab&quot;&gt;ETA beautifier&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/etabuilder&quot;&gt;ETA builder&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;ETA to music converter&lt;/li&gt;
+  &lt;li&gt;Sample programs&lt;/li&gt;
+  &lt;li&gt;Befunge to ETA converter&lt;/li&gt;
+  &lt;li&gt;Optimising ETA interpreter in C&lt;/li&gt;
+  &lt;li&gt;World’s smallest ETA interpreter&lt;/li&gt;
+  &lt;li&gt;An ETA quine&lt;/li&gt;
+  &lt;li&gt;The &lt;i&gt;th&lt;/i&gt;ETA language&lt;/li&gt;
+  &lt;li&gt;Ruby BrainF*ck interpreter&lt;/li&gt;
+  &lt;li&gt;The Choon language&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Wed, 26 Oct 2016 23:29:00 +0300</pubDate>
+        <link>http://sds.switchstep.com/2016/10/26/all-the-old-stuff.html</link>
+        <guid isPermaLink="true">http://sds.switchstep.com/2016/10/26/all-the-old-stuff.html</guid>
+        
+        
+      </item>
+        
+  </channel>
+</rss>

@@ -1,0 +1,1 @@
+while true; do cc -o sykes2 sykes2.c; clear; ./sykes2; done
