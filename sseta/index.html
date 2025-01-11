@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
   <head>
   <meta charset="utf-8">
   <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
@@ -8,7 +7,7 @@
   <!-- (1) force latest IE rendering engine: bit.ly/1c8EiC9 -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <title>Stephen Sykes</title>
+  <title>The ETA C Compiler Project</title>
   <meta name="description" content="Developer
 " />
 
@@ -19,7 +18,7 @@
   
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@sdsykes" />
-    <meta name="twitter:title" content="Stephen Sykes" />
+    <meta name="twitter:title" content="The ETA music converter" />
     <meta name="twitter:image" content="http://sds.switchstep.com/assets/images/ss_logo.png" />
     
     <meta name="twitter:description" content="Developer" />
@@ -27,16 +26,16 @@
   
   
   <meta property="og:site_name" content="Stephen Sykes" />
-  <meta property="og:title" content="Stephen Sykes"/>
+  <meta property="og:title" content="The ETA C Compiler Project"/>
   
   <meta property="og:description" content="Developer" />
   
   <meta property="og:image" content="http://sds.switchstep.com/assets/images/ss_logo.png" />
-  <meta property="og:url" content="http://sds.switchstep.com/error.html" >
+  <meta property="og:url" content="http://sds.switchstep.com/etabefunge/" >
   <meta property="og:type" content="blog" />
   
 
-  <link rel="canonical" href="http://sds.switchstep.com/error.html"/>
+  <link rel="canonical" href="http://sds.switchstep.com/etabfunge/"/>
   <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
   <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -45,71 +44,56 @@
   <link rel="stylesheet" type="text/css" media="print" href="/css/print.css" />
 </head>
 
-
-  <body>
-
+  <body itemscope itemtype="http://schema.org/Article">
     <!-- header start -->
 
 <a href="http://sds.switchstep.com" class="logo-readium"><span class="logo" style="background-image: url(/assets/images/ss_logo.png)"></span></a>
 
 <!-- header end -->
 
+    <main class="content" role="main">
+      <article class="post">
+        
+        <div class="noarticleimage">
+          <div class="post-meta">
+            <h1 class="post-title">Optimising ETA interpreter</h1>
+            <div class="cf post-meta-text">
+              <div class="author-image" style="background-image: url()">Blog Logo</div>
+              <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person"></h4>
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        
+        <section class="post-content">
+          <a name="topofpage"></a>
+          <p>Copyright © Stephen Sykes, 2002.</p>
+          
+          <p>After writing my <a href="/etabefunge/">Befunge to ETA converter</a>, I had a lot of code that ran ok but was very slow under the fastest interpreter available.  I wanted to run Befunge chess under ETA much faster than this.  So I wrote a new interpreter.
+          <p>This ETA interpreter reads the ETA code, and optimises it into a compressed form where all constants and common short ETA sequences are represented by a single character.  Then the interpreter part runs this code.  It is especially quick when running converted Befunge code because I was using analysis of that ETA code when writing this.
+          <p>One other thing to note is the interesting implementation of the ETA stack - I use a doubly linked list.  This is much better than a flat array of some sort because I can halibut deep into the stack without having to shift all the elements.  Also, I implemented a kind of memory, so in cases where we are doing many halibuts in a row to retrieve and set a value deep in the stack, there is no overhead in finding the correct stack item to shift to the top.
+          <p>When running Befunge chess on this interpreter on my Linux box, the computer makes its first move in about 55 seconds.  Actually it's kind of funny to use this on converted Befunge code.  This optimiser tries its hardest combine the ETA into larger operations that can be implemented in a quick way in C.  Which is taking a step back towards the Befunge source we started with...
+          <br>
+          <ul>
+          <li><a href="sseta.c">Download sseta.c</a>
+          </ul>
 
-    <!-- content start -->
-
-    <div class="page-content">
-      <div class="wrapper">
-        <div class="teaserimage">
-    <div class="teaserimage-image" style="background-image: url(/assets/images/cA4aKEIPQrerBnp1yGHv_IMG_9534-3-2.jpg)">
-        Teaser Image
-    </div>
-</div>
-
-<header class="blog-header">
-    
-      <a class="blog-logo" href="http://sds.switchstep.com" style="background-image: url('/assets/images/ss_logo.png')">Stephen Sykes</a>
-    
-    <h1 class="blog-title">Stephen Sykes</h1>
-    <h2 class="blog-description">Developer
+        </section>
+      </article>
+    </main>
+    <div class="bottom-closer">
+      <div class="background-closer-image"  style="background-image: url(/assets/images/cA4aKEIPQrerBnp1yGHv_IMG_9534-3-2.jpg)">
+        Image
+      </div>
+      <div class="inner">
+        <h1 class="blog-title">Stephen Sykes</h1>
+        <h2 class="blog-description">Developer
 </h2>
-    <div class="custom-links">
-      
-        
-            <a class="icon-github" href="https://github.com/sdsykes"  title="Follow me on github">
-              <i class="fa fa-github"></i>
-            </a>
-            &nbsp;&nbsp;·&nbsp;&nbsp;
-        
-      
-      <a href="/about/">About</a>
-    </div>
-</header>
-
-
-<main class="content" role="main">
-
-<h1>404 Not found</h1>
-<p>Probably an outdated link. <a href="http://sds.switchstep.com/2016/10/26/all-the-old-stuff.html">Try here</a> for stuff from my old website.</p>
-
-</main>
-
+        <a href="/" class="btn">Back to Overview</a>
       </div>
     </div>
-
-    <!-- content end -->
-
-    <!-- footer start -->
-
-<footer class="site-footer">
-  <a class="subscribe" href="/feed.xml"> <span class="tooltip"> <i class="fa fa-rss"></i> Subscribe!</span></a>
-    <div class="inner">
-         <section class="copyright">All content copyright <a href="mailto:newsscom.9.sts@xoxy.net">Stephen Sykes</a> &copy; 2016 &bull; All rights reserved.</section>
-         <section class="poweredby">Made with <a href="http://jekyllrb.com"> Jekyll</a></section>
-    </div>
-</footer>
-
-<!-- footer end -->
-
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
 <script type="text/javascript" src="/assets/js/index.js"></script>
@@ -152,7 +136,5 @@
 </script>
 
 
-
   </body>
-
 </html>
