@@ -1,0 +1,95 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html>
+<head>
+<title>ETA interpreter on Befunge</title>
+</head>
+<body bgcolor="#FFFFFF">
+<ul><li><a href="../../">Esoteric Programming Languages</a><ul><li><a href="../">Befunge</a>
+<ul><li><a href="../life/">John Conway's Life</a></li>
+<li><a href="../bef/">Befunge Interpreters in Perl and C</a></li>
+<li><a href="../bef_bef/">Befunge Interpreter in Befunge</a></li>
+<li><a href="../bef_vis/">Befunge Visualiser</a></li>
+<li><a href="../hny/">Happy New Year</a></li>
+<li><a href="../bf2bef/">Brainf*ck Compiler</a></li>
+<li><a href="../chess/">Chess</a></li>
+<li><b>ETA interpreter on Befunge</b></li>
+<li><a href="../bef_o/">Befunge Optimizer</a></li>
+<li><a href="../compo/">Competitions</a></li>
+</ul>
+</li></ul>
+</li></ul>
+<hr>
+<p>20020215, I've finished ETA interpreter on Befunge. See my <a href="../../eta/">first page</a> of ETA for more
+information and links.</p>
+<p>Here you can download <a href="eta.bef">source</a> (400 bytes,
+or <a href="eta_hello.bef">with example</a> - 710 bytes) and see
+visual:</p>
+<blockquote>
+<p><img src="eta.png" alt="632x80 - 4&nbsp;991 bytes" width="632" height="80"></p>
+</blockquote>
+<p>Append interpreted program <em>after one empty line below
+interpreter</em>. Also as you can see intepreter itself is a
+valid albeit empty ETA program. There is room for at least 32
+charasters, please send me your suggestions how to fill it.</p>
+<p>Interpreter have some limitations:</p>
+<ul>
+<li>On detecting ends of lines it depends on internal memory
+structure of original Befunge (on C), in which page array
+was actually one dimension with access to elements via
+&quot;<code>bef_page[y&nbsp;*&nbsp;MAX_BEF_WIDTH&nbsp;+&nbsp;x]</code>&quot;,
+so it may not work on some Befunge realizations. Sorry,
+some black magic here just to exclude hardcoded
+constants;</li>
+<li>Size of field for interpreting program is limited to
+maximum value of Befunge cell, so for standard type (<code>signed
+char</code>) the limit is 127x127. Please change cell
+type if you want to run something bigger than <code>hello.eta</code>;</li>
+<li>ETA's stack is temporaly placed in Befunge cells on <em>halibut</em>
+operator, so stack elements is also limited to cell type.
+Do the same;</li>
+<li>It's impossible to detect end of page, so to avoid long
+delay and following crash (with out of page access)
+please append at the end of your file standard ETA's
+idiom for an exit() call, which is either &quot;<code>Punctured
+Newt</code>&quot; or &quot;<code>GNU&nbsp;telnet</code>&quot;,
+or just &quot;<code>Blanket</code>&quot; if you prefer;</li>
+<li>(I just love this quote AFAIR from <a href="http://www.cisco.com">Cisco</a>) If you do not
+follow these guidelines, unpredictable behavior might
+result.</li>
+</ul>
+<p>For maximum performance of greatest <a href="http://sds.switchstep.com/tictac.eta">Tic-Tac-Toe</a>
+with <a href="../bef/">this</a> Befunge interpreter
+(on C) I recommend:</p>
+<blockquote>
+<pre><pre>#define&nbsp;W	210
+#define&nbsp;H	1500
+#define&nbsp;STACKSIZE	50
+#define	pcell_t	signed&nbsp;long</pre></pre>
+</blockquote>
+<p>There is a successful report on <a href="http://sds.switchstep.com/befunge.html">Befunge to ETA
+compiler</a>, I quote <a href="http://sds.switchstep.com">the
+author</a> of the report:</p>
+<div align="center"><center>
+<table border="1" cellpadding="5" cellspacing="0" width="80%" bgcolor="#C0C0C0">
+<tr>
+<td align="left"><pre><pre>$&nbsp;<em>ruby&nbsp;bef.rb&nbsp;&lt;eta_hello.bef&nbsp;&gt;eta_hello.eta</em>
+...
+$&nbsp;<em>./sseta&nbsp;eta_hello.eta</em>
+ETA&nbsp;reading&nbsp;source
+ETA&nbsp;lines:10384,&nbsp;compiled&nbsp;len:39491
+Optimisations:&nbsp;Z:15604,&nbsp;ZKs:5219,&nbsp;ZZ:1166,&nbsp;aKst(B):4900
+Ksat(C):2381,&nbsp;Zs:53,&nbsp;Zass(D):2390,&nbsp;aB(E):2482,&nbsp;Zh(U):4121
+KhNeg(F):337,&nbsp;KhPos(G):6385,&nbsp;Ks(M):2622,&nbsp;Uss(W):1491,&nbsp;Kt(L):147
+ETA&nbsp;initilising&nbsp;stack
+ETA&nbsp;running&nbsp;eta&nbsp;code
+Making&nbsp;stack
+Making&nbsp;field
+<strong>Hello,&nbsp;world!
+</strong>
+$</pre></pre>
+</td>
+</tr>
+</table>
+</center></div>
+</body>
+</html>

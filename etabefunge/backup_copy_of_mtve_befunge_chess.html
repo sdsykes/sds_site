@@ -1,0 +1,139 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html>
+<head>
+<title>Chess</title>
+</head>
+<body bgcolor="#FFFFFF">
+<ul><li><a href="../../">Esoteric Programming Languages</a><ul><li><a href="../">Befunge</a>
+<ul><li><a href="../life/">John Conway's Life</a></li>
+<li><a href="../bef/">Befunge Interpreters in Perl and C</a></li>
+<li><a href="../bef_bef/">Befunge Interpreter in Befunge</a></li>
+<li><a href="../bef_vis/">Befunge Visualiser</a></li>
+<li><a href="../hny/">Happy New Year</a></li>
+<li><a href="../bf2bef/">Brainf*ck Compiler</a></li>
+<li><b>Chess</b></li>
+<li><a href="../eta/">ETA interpreter on Befunge</a></li>
+<li><a href="../bef_o/">Befunge Optimizer</a></li>
+<li><a href="../compo/">Competitions</a></li>
+</ul>
+</li></ul>
+</li></ul>
+<hr>
+<p>At 20020127 I've finished Chess program on Befunge'93.</p>
+<p>You can donwload <a href="chess.bef">source</a> (1&nbsp;512 bytes) and
+here is the visual:</p>
+<blockquote>
+<p><img src="chess.png" alt="632x304 - 15&nbsp;009 bytes" width="632" height="304"></p>
+</blockquote>
+<p>Limitations of algorithm (not bugs!):</p>
+<ul>
+<li>human plays white and computer plays black;</li>
+<li>no <a href="http://www.conservativebookstore.com/chess/castling.htm">castling</a>
+and <a href="http://www.conservativebookstore.com/chess/enpass.htm">en-passant</a>
+moves;</li>
+<li>your moves are not verified for correctness (i.e. you may
+cheat&trade;), your whites can go to any empty place or
+can eat any black;</li>
+<li>no checkmate processing, game continues until someone's
+king is eaten, and followed from this: <!-- quote from Stephen Sykes -->black can move its
+king into check (it's illegal in chess), and if it is
+already in check it doesn't always move itself out of
+check (also illegal)<!-- end quote -->;</li>
+<li>program will deadcycling on stalemate situation;</li>
+<li>computer moves can be strange or better saying stupid
+(but must conform the rules), I'm not very well playing
+in chess so it's reflected to my program.</li>
+</ul>
+<p>Program works in the following way:</p>
+<ol>
+<li>output board rotated to you, whites represented by
+lowercase letters and blacks by uppercase;</li>
+<li>wait for your move (four charasters - row-from,
+line-from, row-to, line-to - all charasters may be any
+case letters or digits - i.e. &quot;<code>e2e4</code>&quot;)
+and enter. On invalid input [ if <code>(ascii-1)%16&gt;7</code>
+] it will beep and go to step one without clearing the
+input buffer.</li>
+<li>print computer move (in the same form);</li>
+<li>repeat.</li>
+</ol>
+<p>If you want to adjourn a game or if you want to solve some
+problem you can carefully change initial board position directly
+in program text.</p>
+<p>In case you'll find a bug, particularly incorrect move from
+computer, please send me latest board position, your move, wrong
+computer move, and also information about what Befunge on what
+platform you're running.</p>
+<p>In fact I will be highly pleased on any feedback, especially
+on computer's victory reports :)</p>
+<p>Many thanks to <a href="http://sds.switchstep.com">Stephen Sykes</a>
+for intensive
+testing, locating minor bug, improving description of program and
+solving problems of shortest sequences for win and lose (slightly
+<font color="#FF0000">m</font>odified quote from Stephen
+follows):</p>
+<div align="center"><center>
+<table border="1" cellpadding="5" cellspacing="0" width="80%">
+<tr>
+<td align="left" bgcolor="#C0C0C0">The quickest win I have come up
+with is 4 moves:<blockquote>
+<p><code>e2e3&nbsp;f7f6<br>
+h2h4&nbsp;d7d5<br>
+d1h5&nbsp;c7c5<br>
+h5e8</code></p>
+</blockquote>
+<blockquote>
+<p>white wins</p>
+</blockquote>
+<p>Oh, and the fastest suicide is also 4 moves:</p>
+<blockquote>
+<p><code>f2f4&nbsp;h7h5<br>
+e1f2&nbsp;e7e6<br>
+f2g3&nbsp;g7g6<br>
+g3g4&nbsp;(h5xg4)</code></p>
+<p>black wins</p>
+</blockquote>
+<p>Of course <code>g3g4</code> (or <code>g3h4</code> for
+that matter, but the program does not notice the winning
+move in that case) is an illegal move in normal chess -
+you can't move your king into check. This sequence avoids
+that:</p>
+<blockquote>
+<p><code>e2e4&nbsp;h7h5<br>
+e1e2&nbsp;c7c5<br>
+e2d3&nbsp;c5c4<br>
+a2a3&nbsp;(c4xd3)</code></p>
+<p>black wins</p>
+</blockquote>
+<p>However, <code>a2a3</code> is not strictly legal here
+- you must move your king out of check if you can (my
+fast win relies on black not doing this, of course). </p>
+<p>The shortest suicide mate I have found, without either
+white or black making an illegal move, is this 13 move
+job:</p>
+<blockquote>
+<p><code>d2d3&nbsp;f7f6<br>
+e1d2&nbsp;b8a6&nbsp;#&nbsp;moving&nbsp;the&nbsp;king&nbsp;up<br>
+d2c3&nbsp;c7c5<br>
+c3c4&nbsp;f6f5<br>
+c4b5&nbsp;d7d6<br>
+a2a4&nbsp;c5c4&nbsp;#&nbsp;surround&nbsp;the&nbsp;king&nbsp;as&nbsp;much&nbsp;as
+possible<br>
+d3d4&nbsp;g7g5<br>
+c2c3&nbsp;h7h5<br>
+b1a3&nbsp;e7e5<br>
+d4d5&nbsp;g5g4<br>
+c1e3&nbsp;g4g3<br>
+e3b6&nbsp;g3x</code><font color="#FF0000"><code>h</code></font><code>2
+#&nbsp;try&nbsp;to&nbsp;lure&nbsp;the&nbsp;queen&nbsp;over<br>
+</code><font color="#FF0000"><code>a1a2</code></font><code>&nbsp;d8xb6
+#&nbsp;<!--&nbsp;stop&nbsp;the&nbsp;pawn&nbsp;queening,&nbsp;and&nbsp;-->the&nbsp;queen&nbsp;takes&nbsp;the&nbsp;bait&nbsp;black&nbsp;mates</code></p>
+</blockquote>
+</td>
+</tr>
+</table>
+</center></div>
+<p>At 20020206 Stephen publish his magnificent <a href="http://sds.switchstep.com/befunge.html">befunge
+to ETA compiler</a> and graciously mention this page.</p>
+</body>
+</html>

@@ -26,16 +26,16 @@
   
   
   <meta property="og:site_name" content="Stephen Sykes" />
-  <meta property="og:title" content="ETA Sample Programs"/>
+  <meta property="og:title" content="The ETA C Compiler Project"/>
   
   <meta property="og:description" content="Developer" />
   
   <meta property="og:image" content="http://sds.switchstep.com/assets/images/ss_logo.png" />
-  <meta property="og:url" content="http://sds.switchstep.com/etasamples/" >
+  <meta property="og:url" content="http://sds.switchstep.com/etabefunge/" >
   <meta property="og:type" content="blog" />
   
 
-  <link rel="canonical" href="http://sds.switchstep.com/etasamples/"/>
+  <link rel="canonical" href="http://sds.switchstep.com/etabfunge/"/>
   <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
   <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -56,7 +56,7 @@
         
         <div class="noarticleimage">
           <div class="post-meta">
-            <h1 class="post-title">ETA Example Programs</h1>
+            <h1 class="post-title">Befunge to ETA converter</h1>
             <div class="cf post-meta-text">
               <div class="author-image" style="background-image: url()">Blog Logo</div>
               <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person"></h4>
@@ -70,83 +70,21 @@
         <section class="post-content">
           <a name="topofpage"></a>
           <p>Copyright © Stephen Sykes, 2001.</p>
-<P>I will place more programs here as I write them. Comments welcome - mail <?php ss_email() ?></P>
-<H2>Rev Utility</H2>
-
-
-<FONT size=-1><BLOCKQUOTE><PRE>
-.dalas a ni gge ym yrt
-uoy nehw yrraM .nup tes tup n'tfo ym evoba snup yrT .eurT .duola lla kculc kculc yas
-neh ynuP .tolb desu a tnuP .raet
-liarf a yrc naem stib desreveR::
-::Reversed bits mean cry a frail 
-tear. Punt a used blot. Puny hen
-say cluck cluck all aloud. True. Try puns above my oft'n put set pun. Marry when you
-try my egg in a salad.
-</PRE></BLOCKQUOTE></FONT>
-
-<H2>Hi Program</H2>
-<p>A suitable reply to the standard Hello World!</p>
-<FONT size=-1><BLOCKQUOTE><PRE>
-Drunk today, 
-Me awfully rather bladdered,
-Do unlawful butchery coldly nine new ways at home, 
-Do crazy new nuts (red, and blue salty), but
-Mummy normally says hear this: 
-Untold envy tends to make a tired owl... 
-...Hoot!
-</PRE></BLOCKQUOTE></FONT>
-
-<H2>Noughts and Crosses Program</H2>
-<p>Also known as Tic Tac Toe.  It's too long to list here, but the simple source is <a href="tictac.eta">here</a>, 
-the beautified version is <a href="tictac.etab">here</a>, and the eta-builder source is <a href="tictac.rb">here</a>.
-<H2>Bi-lingual Cat Detector</H2>
-<p>This is a version of my cat detector program (as described in the <a href="/etapalm/">ETA for Palm Pilot</a> pages) that can be interpreted by any standard ETA interpreter, and also will interpret itself if you run it with Ruby.</p>
-<FONT size=-1><BLOCKQUOTE><PRE>
-ant=[]
-net=DATA.readlines
-$==f=c=0;l=11
-loop{net[l-11].gsub(/(a)|(i)|(n)|(o)|(h)|(e)|(s)|t/){
-f&gt;0?$6?ant&lt;&lt;c&amp;&amp;c=f=0:(c="htaoins".index($&amp;)+c*7): $1?ant&lt;&lt;l+2: $2?ant&lt;&lt;STDIN.getc: $3?f=
-1:(z=ant.pop
-$4?$&gt;&lt;&lt;z.chr: $5?ant&lt;&lt;ant[-1-z.abs]&amp;&amp;z&gt;0&amp;&amp;ant.slice!(-2-z):(b=ant.pop
-$6?ant&lt;&lt;b/z&amp;&amp;ant&lt;&lt;b%z: $7?ant&lt;&lt;b-z: b!=0&amp;&amp;(l=z-2
-break)))}
-l+=1;net[l-11]&amp;&amp;l&gt;=11||break}
-__END__
-   ntiteo: nice cat
-   ntsseo: bad cat
-   natieo: nice cat
-   nahoeo: bad cat
-   nttaeo: nice cat
-    niieo: no such cat
-     tate: mad cat
-      ine: happy cat
-naehsnteh: nightmare cat
-    ntoes: naughty but nice cat
-   nanetn: a very fat cat
-     naee: nearly a tiger in fact
-  atnnhet: a cat came - but nice or not?
-   ntiteo: nice cat
-   natheo: nice cat
-   nahteo: nice cat
-   nahoeo: nice cat
-    niieo: nice cat
-   nahteo: nice cat
-   ntsseo: nice cat
-   naaieo: nice cat
-    nineo: nice cat
- ntoeonet: good kitty
-   ntaoeo: bad cat
-   ntsseo: bad cat
-   nahaeo: bad cat
-    niieo: bad cat
-   nahteo: bad cat
-   ntsseo: bad cat
-   naaieo: bad cat
-    nineo: bad cat
- ntoeonet: nasty kitty
-</PRE></BLOCKQUOTE></FONT>
+          
+<p><img src="/images/befins.gif" align="left" alt="Befunge">I got a little bit interested in Chris Pressey's <a href="https://en.wikipedia.org/wiki/Befunge">Befunge</a> language, particularly after <a href="http://www.frox25.no-ip.org/~mtve/">one crazy hacker</a> wrote a <a href="http://www.frox25.no-ip.org/~mtve/code/eso/bef/chess/">chess program</a> in it.</p>
+<img src="/images/chess.png">
+<p>I thought that ETA should run chess too.  But rather than write a new chess program in ETA, which I believe would not be too hard with my <a href="/etabuilder/">ETA Builder</a> stuff, I thought it would be a bit of a challenge to run Dmitri's Befunge chess program in ETA.  So I invented a Befunge to ETA compiler.</p>
+<p>It's written in <a href="http://www.ruby-lang.org/en/">Ruby</a>, and takes Befunge source on the standard input, and produces ETA code on the standard output.  Oh, and it gives you a commentary of what it's up to on the standard error stream.  Note that you do need to also download <a href="/etabuilder/">ETA Builder</a>.</p>
+<p>After I'd built the compiler, I could run any other Befunge programs - including the wonderful <a href="wumpus.bef">Hunt the Wumpus</a> implementation by Wim Rijnders.  This is the largest Befunge program I know of.</p>
+<br>
+<ul>
+<li><a href="bef.rb">ETA to Befunge converter</a>
+<li><a href="chess.bef">Befunge chess source</a>*
+<li>Compiled ETA chess code - <a href="chess.eta.gz">gzip</a> or <a href="chess.zip">winzip</a>
+<li><a href="wumpus.bef">Befunge Hunt the Wumpus source</a>
+<li>Compiled ETA wumpus code - <a href="wumpus.eta.gz">gzip</a> or <a href="wumpus.zip">winzip</a>
+</ul>
+<p>* Note that this version of chess.bef is modified from Dmitri's original in order to show a progress bar when the computer makes a move.  This is because the ETA version is really pretty slow, and it's really nice to see that it is actually doing something.  I recommend using my <a href="/sseta/">optimising ETA interpreter</a> to run it as fast as possible!</p>
 
 
         </section>
