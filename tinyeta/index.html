@@ -19,7 +19,7 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@sdsykes" />
     <meta name="twitter:title" content="World’s smallest ETA interpreter" />
-    <meta name="twitter:image" content="http://sds.switchstep.com/assets/images/ss_logo.png" />
+    <meta name="twitter:image" content="https://sds.switchstep.com/assets/images/ss_logo.png" />
     
     <meta name="twitter:description" content="Developer" />
     
@@ -30,12 +30,12 @@
   
   <meta property="og:description" content="Developer" />
   
-  <meta property="og:image" content="http://sds.switchstep.com/assets/images/ss_logo.png" />
-  <meta property="og:url" content="http://sds.switchstep.com/tinyeta/" >
+  <meta property="og:image" content="https://sds.switchstep.com/assets/images/ss_logo.png" />
+  <meta property="og:url" content="https://sds.switchstep.com/tinyeta/" >
   <meta property="og:type" content="blog" />
   
 
-  <link rel="canonical" href="http://sds.switchstep.com/tinyeta/"/>
+  <link rel="canonical" href="https://sds.switchstep.com/tinyeta/"/>
   <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
   <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -47,7 +47,7 @@
   <body itemscope itemtype="http://schema.org/Article">
     <!-- header start -->
 
-<a href="http://sds.switchstep.com" class="logo-readium"><span class="logo" style="background-image: url(/assets/images/ss_logo.png)"></span></a>
+<a href="https://sds.switchstep.com" class="logo-readium"><span class="logo" style="background-image: url(/assets/images/ss_logo.png)"></span></a>
 
 <!-- header end -->
 
@@ -74,7 +74,7 @@
 <p><a href="#latest">Scroll to the bottom for the latest improvements</a>
 <p>It's fun to write really small and compact code in the tradition of the annual obfuscated C contest.
 Perl also lends itself to this kind of compressed code, and there is an ETA interpreter written in this way.
-<p><a href="http://www.ruby-lang.org/en">Ruby</a>, however, is not known for this type of thing.
+<p><a href="https://www.ruby-lang.org/en">Ruby</a>, however, is not known for this type of thing.
 But I present here a compressed Ruby interpreter that is rather shorter than the shortest Perl version made so far:
 <p>
 <FONT size=-1><BLOCKQUOTE><PRE>
@@ -83,7 +83,7 @@ f&gt;0?$6?n&lt;&lt;c&amp;&amp;c=f=0:c="htaoins".index($&amp;)+c*7: $1?n&lt;&lt;l
 1:(a=n.pop;$4?$&gt;&lt;&lt;a.chr: $5?n&lt;&lt;n[-1-a.abs]&amp;&amp;a&gt;0&amp;&amp;n.slice!(-2-a):(b=n.pop;$6?n&lt;&lt;
 b/a&amp;&amp;n&lt;&lt;b%a: $7?n&lt;&lt;b-a: b!=0&amp;&amp;(l=a-2;break)))};p[l+=1]&amp;&amp;l&gt;=0||break}
 </PRE></BLOCKQUOTE></FONT>
-<p>Actually, this started life as a 5-liner, but harsh competition from <a href="http://www.frox25.no-ip.org/~mtve/">mtve</a> and the guys at <a href="http://www.perlmonks.com">Perl Monks</a> motivated me to do some more work on it.  The most significant optimisations were using gsub as the line level iterator, using negative subscripts instead of using the 'size' method on the stack, extensive use of logical operators rather than 'if' or '?:', and use of the $= variable instead of downcase.
+<p>Actually, this started life as a 5-liner, but harsh competition from <a href="http://www.frox25.no-ip.org/~mtve/">mtve</a> and the guys at <a href="https://www.perlmonks.com">Perl Monks</a> motivated me to do some more work on it.  The most significant optimisations were using gsub as the line level iterator, using negative subscripts instead of using the 'size' method on the stack, extensive use of logical operators rather than 'if' or '?:', and use of the $= variable instead of downcase.
 <p>It now stands at 306 characters and I'm particularly pleased with it.
 <p>So the challenge has been laid - is is possible to build an ETA interpreter in less than this in a mainstream language?
 <p><font color="#ff0000">*** [update 21 Feb 2002]</font> Mtve and the guys ar perl monks have come up with a new strategy that beats this Ruby implementation - 290 bytes is the current record.  See the evolution described <a href="http://www.frox25.no-ip.org/~mtve/code/eso/eta/eta_pl/">here</a>.  I tried a couple of different Ruby implementations, including this one:
