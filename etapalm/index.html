@@ -19,7 +19,7 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@sdsykes" />
     <meta name="twitter:title" content="Palm OS ETA Interpreter" />
-    <meta name="twitter:image" content="http://sds.switchstep.com/assets/images/ss_logo.png" />
+    <meta name="twitter:image" content="https://sds.switchstep.com/assets/images/ss_logo.png" />
     
     <meta name="twitter:description" content="Developer" />
     
@@ -30,12 +30,12 @@
   
   <meta property="og:description" content="Developer" />
   
-  <meta property="og:image" content="http://sds.switchstep.com/assets/images/ss_logo.png" />
-  <meta property="og:url" content="http://sds.switchstep.com/etapalm/" >
+  <meta property="og:image" content="https://sds.switchstep.com/assets/images/ss_logo.png" />
+  <meta property="og:url" content="https://sds.switchstep.com/etapalm/" >
   <meta property="og:type" content="blog" />
   
 
-  <link rel="canonical" href="http://sds.switchstep.com/etapalm/"/>
+  <link rel="canonical" href="https://sds.switchstep.com/etapalm/"/>
   <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
   <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -47,7 +47,7 @@
   <body itemscope itemtype="http://schema.org/Article">
     <!-- header start -->
 
-<a href="http://sds.switchstep.com" class="logo-readium"><span class="logo" style="background-image: url(/assets/images/ss_logo.png)"></span></a>
+<a href="https://sds.switchstep.com" class="logo-readium"><span class="logo" style="background-image: url(/assets/images/ss_logo.png)"></span></a>
 
 <!-- header end -->
 
@@ -70,11 +70,11 @@
         <section class="post-content">
           <a name="topofpage"></a>
           <p>Copyright © Stephen Sykes, 2001.
-This is the implementation of <a href="http://www.miketaylor.org.uk">Mike Taylor</a>’s <a href="http://www.miketaylor.org.uk/tech/eta/doc">ETA language</a> for Palm OS.<br /></p>
+This is the implementation of <a href="https://www.miketaylor.org.uk">Mike Taylor</a>’s <a href="https://www.miketaylor.org.uk/tech/eta/doc">ETA language</a> for Palm OS.<br /></p>
 
 <p>If you have a palm pilot, then this is ideal for when you’re on a train or plane and have nothing better to do that to invent your next self-documenting eta program.</p>
 
-<p>It consists of two fully fledged palm applications (.prc files) that can be installed and used on any Palm OS device.  The first is a standalone <a href="/assets/eta.prc">ETA interpreter</a>, the second is an <a href="/assets/etac.prc">ETA to C translator</a> which produces programs that may then be compiled with <a href="http://www.orbworks.com">Pocket C</a>.</p>
+<p>It consists of two fully fledged palm applications (.prc files) that can be installed and used on any Palm OS device.  The first is a standalone <a href="/assets/eta.prc">ETA interpreter</a>, the second is an <a href="/assets/etac.prc">ETA to C translator</a> which produces programs that may then be compiled with <a href="https://www.orbworks.com">Pocket C</a>.</p>
 
 <h3 id="the-interpreter">The Interpreter</h3>
 <p>Once installed through the hotsync process (or beamed to you from another ETA fan), your screen should look something like this.  </p>
@@ -101,7 +101,7 @@ mean time it is the smallest it can be.</p>
 <p>As you can see, Tiddles did not pass the test.  The interpreter uses an alert box for errors and other messages.</p>
 
 <h3 id="test-program">Test Program</h3>
-<p>Here is my patented 1-Meow® cat identifier.  Note that this program makes use of the <a href="http://www.miketaylor.org.uk/tech/eta/doc/manual.html#3.4.8">halibut instruction</a> to rotate the top <i>three</i> items on the stack, thereby proving that the instruction functions correctly (which it didn’t on my first version of the interpreter!)</p>
+<p>Here is my patented 1-Meow® cat identifier.  Note that this program makes use of the <a href="https://www.miketaylor.org.uk/tech/eta/doc/manual.html#3.4.8">halibut instruction</a> to rotate the top <i>three</i> items on the stack, thereby proving that the instruction functions correctly (which it didn’t on my first version of the interpreter!)</p>
 
 <pre>
    ntiteo: nice cat
@@ -146,15 +146,15 @@ naehsnteh: nightmare cat
 
 <p>After installing the translator, it should show up on your device as you can see on the left.  The translator expects your program to be stored in a memo entitled ETA2C.  After running your program through the translator, the C program output will be in a memo entitled <code>// etaout</code>.  This may then be compiled by Pocket C.</p>
 
-<p>Programs compiled in this way will run very much quicker than when using the interpreter.  These two screenshots demonstrate the improvement using <a href="http://www.miketaylor.org.uk/tech/eta/pit/hello2.eta">hello2.eta</a> as the source code.  The translator uses some simple optimisation strategies, including removing obvious no-op sequences and ignoring ends of lines that are always jumped over using sequences like AAT or NTEAT.</p>
+<p>Programs compiled in this way will run very much quicker than when using the interpreter.  These two screenshots demonstrate the improvement using <a href="https://www.miketaylor.org.uk/tech/eta/pit/hello2.eta">hello2.eta</a> as the source code.  The translator uses some simple optimisation strategies, including removing obvious no-op sequences and ignoring ends of lines that are always jumped over using sequences like AAT or NTEAT.</p>
 
 <p><img src="/assets/images/palm6.gif" />
 <img src="/assets/images/palm7.gif" /></p>
 
 <h3 id="source-code-for-the-interpreter">Source Code for the Interpreter</h3>
-<p>This program is written for a cross compiler called <a href="http://www.orbworks.com">Pocket C</a>.  The program is not long, only about 200 lines, and is readily readable - I even put some comments in.  </p>
+<p>This program is written for a cross compiler called <a href="https://www.orbworks.com">Pocket C</a>.  The program is not long, only about 200 lines, and is readily readable - I even put some comments in.  </p>
 
-<p>Pocket C does not produce very fast applications - for instance the example program <a href="http://www.miketaylor.org.uk/tech/eta/pit/bottles.eta">bottles.eta</a> takes over two hours to run on my Palm V.  Therefore, you will notice that I have written the code in such a way to be as efficient as possible, at the expense of programming niceties.  On the other hand, you could always compile your programs using the translator.</p>
+<p>Pocket C does not produce very fast applications - for instance the example program <a href="https://www.miketaylor.org.uk/tech/eta/pit/bottles.eta">bottles.eta</a> takes over two hours to run on my Palm V.  Therefore, you will notice that I have written the code in such a way to be as efficient as possible, at the expense of programming niceties.  On the other hand, you could always compile your programs using the translator.</p>
 
 <p>The source code is <a href="/assets/eta2.pc">here</a>.  If you want to compile it, you’ll also need the two icon graphics, the <a href="/assets/eta-small.bmp">small one</a> and the <a href="/assets/eta-large.bmp">big one</a>.</p>
 
