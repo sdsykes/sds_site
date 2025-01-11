@@ -234,7 +234,7 @@ s&lt;&lt;eval(%w{,&gt;0?(s.slice!~p):s[p-1] ,,==0||(break~_=c), _ ,utc~~,
 STDIN.getc||-1 a=0 ,,-c ,,;s&lt;&lt;p/c;p%c ,*7+q a=,}[a ?8+q/7:q].gsub(',','
 c=p;p=s.pop;p'))}while$_=i[-1+_+=1]
 </PRE></BLOCKQUOTE></FONT>
-This comes in at 224 chars.  Notice I needed to add STDIN. before getc, and parens around the arguments to gsub.  These alone account for 8 chars.  So I think 224 is a good result given these constraints.
+<p>This comes in at 224 chars.  Notice I needed to add STDIN. before getc, and parens around the arguments to gsub.  These alone account for 8 chars.  So I think 224 is a good result given these constraints.
 <p>Next to see is the unclean, warnings-but-we-don't-care version:
 <FONT size=-1><BLOCKQUOTE><PRE>
 i=p,*$&lt;;_,a=1;scan(/\w/){i&lt;&lt;eval(%w{,>0?(i.slice!~p):i[p-1]
@@ -266,6 +266,19 @@ c=p;p=i.pop;p')if Q=/#$&amp;/i=~'htaoinse'}while$_=i[~-_+=1]
 
 [211 chars]
 </PRE></BLOCKQUOTE></FONT>
+
+<p><font color="#ff0000">*** [update 11 Jan 2025]</font> I updated the latest version to work with modern ruby (tested on 3.4). This uses some more characters as might be expected. There may be some savings to be found still, but I don't expect it would get back to into the 220s.
+  
+<FONT size=-1><BLOCKQUOTE><PRE>
+i=p,*$&lt;;l,a,n,*s=1;$_.scan(/\w/){q=/#$&amp;/i=~'htaoinse'and
+s&lt;&lt;eval(%w{,>0?(s.slice!~p):s[p-1] ,,!=0&amp;&amp;(n=l=c), l ,utc~~,
+STDIN.getbyte||-1 a=0 ,,-c ,,;s&lt;&lt;p/c;p%c ,*7+q a=,}[a ?8+q/7:q].gsub(',','
+c=p;p=s.pop;p'));n&amp;&amp;(n=!n;break)}while$_=i[~-l+=1]
+
+[243 chars]
+</PRE></BLOCKQUOTE></FONT>
+
+<>
 <hr width="40%">
 <p>If you are interested in obfuscated Ruby, then <a href="https://web.archive.org/web/20121016024940/http://users.cybercity.dk/~dsl8950/ruby/else.html">this</a> is a good page - there is a nice maze generator in 10 lines (you need to know it takes two arguments - width and height), and also a BrainF*ck implementation.
 
